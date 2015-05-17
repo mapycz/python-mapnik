@@ -13,8 +13,8 @@ def call(cmd, silent=True):
         print stderr
 
 
-prefix = env['PREFIX']
-target_path = os.path.normpath(sysconfig.get_python_lib() + os.path.sep + env['MAPNIK_NAME'])
+
+target_path = os.path.normpath(sysconfig.get_python_lib(prefix = env['INSTALL_PREFIX']) + os.path.sep + env['MAPNIK_NAME'])
 
 py_env = env.Clone()
 
