@@ -2,7 +2,7 @@
  *
  * This file is part of Mapnik (c++ mapping toolkit)
  *
- * Copyright (C) 2014 Artem Pavlenko, Jean-Francois Doyon
+ * Copyright (C) 2015 Artem Pavlenko, Jean-Francois Doyon
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,7 +22,7 @@
 #ifndef MAPNIK_THREADS_HPP
 #define MAPNIK_THREADS_HPP
 
-#include <boost/thread/tss.hpp>         // for thread_specific_ptr
+#include <boost/thread/tss.hpp>
 #include <Python.h>
 
 namespace mapnik {

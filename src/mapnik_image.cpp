@@ -2,7 +2,7 @@
  *
  * This file is part of Mapnik (c++ mapping toolkit)
  *
- * Copyright (C) 2014 Artem Pavlenko, Jean-Francois Doyon
+ * Copyright (C) 2015 Artem Pavlenko, Jean-Francois Doyon
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedef"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wshadow"
 
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
@@ -139,7 +140,7 @@ void fill_double(mapnik::image_any & im, double val)
 
 std::shared_ptr<image_any> copy(mapnik::image_any const& im, mapnik::image_dtype type, double offset, double scaling)
 {
-    return std::make_shared<image_any>(std::move(mapnik::image_copy(im, type, offset, scaling)));
+    return std::make_shared<image_any>(mapnik::image_copy(im, type, offset, scaling));
 }
 
 unsigned compare(mapnik::image_any const& im1, mapnik::image_any const& im2, double threshold, bool alpha)
@@ -191,7 +192,7 @@ object get_pixel(mapnik::image_any const& im, unsigned x, unsigned y, bool get_c
 
 void set_pixel_color(mapnik::image_any & im, unsigned x, unsigned y, mapnik::color const& c)
 {
-    if (x >= static_cast<int>(im.width()) && y >= static_cast<int>(im.height()))
+    if (x >= static_cast<unsigned>(im.width()) && y >= static_cast<unsigned>(im.height()))
     {
         PyErr_SetString(PyExc_IndexError, "invalid x,y for image dimensions");
         boost::python::throw_error_already_set();
@@ -202,7 +203,7 @@ void set_pixel_color(mapnik::image_any & im, unsigned x, unsigned y, mapnik::col
 
 void set_pixel_double(mapnik::image_any & im, unsigned x, unsigned y, double val)
 {
-    if (x >= static_cast<int>(im.width()) && y >= static_cast<int>(im.height()))
+    if (x >= static_cast<unsigned>(im.width()) && y >= static_cast<unsigned>(im.height()))
     {
         PyErr_SetString(PyExc_IndexError, "invalid x,y for image dimensions");
         boost::python::throw_error_already_set();
@@ -213,7 +214,7 @@ void set_pixel_double(mapnik::image_any & im, unsigned x, unsigned y, double val
 
 void set_pixel_int(mapnik::image_any & im, unsigned x, unsigned y, int val)
 {
-    if (x >= static_cast<int>(im.width()) && y >= static_cast<int>(im.height()))
+    if (x >= static_cast<unsigned>(im.width()) && y >= static_cast<unsigned>(im.height()))
     {
         PyErr_SetString(PyExc_IndexError, "invalid x,y for image dimensions");
         boost::python::throw_error_already_set();
@@ -235,7 +236,7 @@ std::shared_ptr<image_any> open_from_file(std::string const& filename)
         std::unique_ptr<image_reader> reader(get_image_reader(filename,*type));
         if (reader.get())
         {
-            return std::make_shared<image_any>(std::move(reader->read(0,0,reader->width(),reader->height())));
+            return std::make_shared<image_any>(reader->read(0,0,reader->width(),reader->height()));
         }
         throw mapnik::image_reader_exception("Failed to load: " + filename);
     }
@@ -247,7 +248,7 @@ std::shared_ptr<image_any> fromstring(std::string const& str)
     std::unique_ptr<image_reader> reader(get_image_reader(str.c_str(),str.size()));
     if (reader.get())
     {
-        return std::make_shared<image_any>(std::move(reader->read(0,0,reader->width(), reader->height())));
+        return std::make_shared<image_any>(reader->read(0,0,reader->width(), reader->height()));
     }
     throw mapnik::image_reader_exception("Failed to load image from buffer" );
 }
@@ -282,14 +283,9 @@ void set_color_to_alpha(image_any & im, mapnik::color const& c)
     mapnik::set_color_to_alpha(im, c);
 }
 
-void set_alpha(image_any & im, float opacity)
+void apply_opacity(image_any & im, float opacity)
 {
-    mapnik::set_alpha(im, opacity);
-}
-
-void multiply_alpha(image_any & im, float opacity)
-{
-    mapnik::multiply_alpha(im, opacity);
+    mapnik::apply_opacity(im, opacity);
 }
 
 bool premultiplied(image_any &im)
@@ -410,8 +406,7 @@ void export_image()
         .def("set_grayscale_to_alpha",&set_grayscale_to_alpha, "Set the grayscale values to the alpha channel of the Image")
         .def("set_grayscale_to_alpha",&set_grayscale_to_alpha_c, "Set the grayscale values to the alpha channel of the Image")
         .def("set_color_to_alpha",&set_color_to_alpha, "Set a given color to the alpha channel of the Image")
-        .def("set_alpha",&set_alpha, "Set the overall alpha channel of the Image")
-        .def("multiply_alpha",&multiply_alpha, "Multiply the alpha channel of the Image")
+        .def("apply_opacity",&apply_opacity, "Set the opacity of the Image relative to the current alpha of each pixel.")
         .def("composite",&composite,
          ( arg("self"),
            arg("image"),

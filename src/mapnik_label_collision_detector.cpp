@@ -2,7 +2,7 @@
  *
  * This file is part of Mapnik (c++ mapping toolkit)
  *
- * Copyright (C) 2014 Artem Pavlenko
+ * Copyright (C) 2015 Artem Pavlenko
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -28,6 +28,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedef"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wshadow"
 
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
@@ -68,7 +69,7 @@ make_label_boxes(std::shared_ptr<label_collision_detector4> det)
     for (label_collision_detector4::query_iterator jtr = det->begin();
          jtr != det->end(); ++jtr)
     {
-        boxes.append<box2d<double> >(jtr->box);
+        boxes.append<box2d<double> >(jtr->get().box);
     }
 
     return boxes;

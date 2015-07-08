@@ -28,6 +28,7 @@
 #pragma GCC diagnostic ignored "-Wunused-parameter"
 #pragma GCC diagnostic ignored "-Wunused-local-typedef"
 #pragma GCC diagnostic ignored "-Wmissing-field-initializers"
+#pragma GCC diagnostic ignored "-Wshadow"
 
 #include <boost/python.hpp>
 #include <boost/python/def.hpp>
@@ -67,7 +68,7 @@ std::shared_ptr<mapnik::geometry::geometry<double> > from_wkb_impl(std::string c
     std::shared_ptr<mapnik::geometry::geometry<double> > geom = std::make_shared<mapnik::geometry::geometry<double> >();
     try
     {
-        *geom = std::move(mapnik::geometry_utils::from_wkb(wkb.c_str(), wkb.size()));
+        *geom = mapnik::geometry_utils::from_wkb(wkb.c_str(), wkb.size());
     }
     catch (...)
     {
