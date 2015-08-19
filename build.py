@@ -98,10 +98,17 @@ if 'uninstall' not in COMMAND_LINE_TARGETS:
         py_env.Append(CPPDEFINES = '-DHAVE_CAIRO')
         if link_all_libs:
             py_env.Append(LIBS=env['CAIRO_ALL_LIBS'])
-
-    if env['HAS_PYCAIRO']:
         py_env.Append(CPPDEFINES = '-DHAVE_PYCAIRO')
-        py_env.Append(CPPPATH = env['PYCAIRO_PATHS'])
+        # Configure pycairo
+        pycairo_env = py_env.Clone()
+        try:
+            pycairo_env.ParseConfig('pkg-config --cflags pycairo')
+            for inc in pycairo_env['CPPPATH']:
+                if not inc in py_env['CPPPATH']:
+                    py_env["CPPPATH"].append(inc)
+        except OSError, e:
+            color_print(1, 'failed to configure pycairo: pkg-config reported: %s' % e)
+            Exit(1)
 
 py_env.Append(LINKFLAGS=python_link_flag)
 py_env.AppendUnique(LIBS='mapnik-json')
