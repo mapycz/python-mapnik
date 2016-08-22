@@ -1,0 +1,39 @@
+#!/usr/bin/make -f
+# -*- makefile -*-
+
+# Uncomment this to turn on verbose mode.
+#export DH_VERBOSE=1
+
+# Enable hardening build flags, except:
+#  pie: causes build failure
+export DEB_BUILD_MAINT_OPTIONS=hardening=+all,-pie
+
+#export PYBUILD_NAME=mapnik
+
+# Enable Cairo support
+export PYCAIRO=true
+
+# Use system fonts instead of mapnik specific fonts
+export SYSTEM_FONTS=/usr/share/fonts
+
+# Custom mapnik libraries
+export LIB_DIR_NAME=/mapnik/3.0
+
+%:
+	dh $@ \
+		--with python2,python3 \
+		--buildsystem=pybuild \
+		--parallel
+
+override_dh_clean:
+	dh_clean mapnik/paths.py
+
+override_dh_auto_clean:
+	# Skip
+
+override_dh_auto_test:
+	dh_auto_test || echo "Ignoring test failures"
+
+override_dh_install:
+	dh_install --list-missing
+

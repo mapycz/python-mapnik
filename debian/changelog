@@ -1,0 +1,5 @@
+szn-python-mapnik (3:3.5.4) UNRELEASED; urgency=medium
+
+  * Python 3 support
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Mon, 22 Aug 2016 13:20:53 +0000
