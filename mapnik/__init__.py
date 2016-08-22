@@ -1,20 +1,20 @@
 #
-# This file is part of Mapnik (C++/Python mapping toolkit)
-# Copyright (C) 2014 Artem Pavlenko
+# This file is part of Mapnik (c++ mapping toolkit)
+# Copyright (C) 2015 Artem Pavlenko
 #
-# Mapnik is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# as published by the Free Software Foundation; either version 2
-# of the License, or any later version.
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License, or (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful,
+# This library is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
 #
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 #
 
 """Mapnik Python module.
@@ -47,6 +47,7 @@ try:
 except ImportError:
     import simplejson as json
 
+
 def bootstrap_env():
     """
     If an optional settings file exists, inherit its
@@ -60,8 +61,9 @@ def bootstrap_env():
 
         env = {'ICU_DATA':'/usr/local/share/icu/'}
     """
-    if os.path.exists(os.path.join(os.path.dirname(__file__),'mapnik_settings.py')):
-        from mapnik_settings import env
+    if os.path.exists(os.path.join(
+            os.path.dirname(__file__), 'mapnik_settings.py')):
+        from .mapnik_settings import env
         process_keys = os.environ.keys()
         for key, value in env.items():
             if key not in process_keys:
@@ -69,40 +71,47 @@ def bootstrap_env():
 
 bootstrap_env()
 
-from _mapnik import *
+from ._mapnik import *
 
-import printing
+from . import printing
 printing.renderer = render
 
 # The base Boost.Python class
 BoostPythonMetaclass = Coord.__class__
 
+
 class _MapnikMetaclass(BoostPythonMetaclass):
+
     def __init__(self, name, bases, dict):
         for b in bases:
             if type(b) not in (self, type):
-                for k,v in list(dict.items()):
+                for k, v in list(dict.items()):
                     if hasattr(b, k):
-                        setattr(b, '_c_'+k, getattr(b, k))
-                    setattr(b,k,v)
+                        setattr(b, '_c_' + k, getattr(b, k))
+                    setattr(b, k, v)
         return type.__init__(self, name, bases, dict)
 
 # metaclass injector compatible with both python 2 and 3
 # http://mikewatkins.ca/2008/11/29/python-2-and-3-metaclasses/
-_injector = _MapnikMetaclass('_injector', (object, ), {})
+def _injector() :
+    return _MapnikMetaclass('_injector', (object, ), {})
 
-def Filter(*args,**kwargs):
+
+def Filter(*args, **kwargs):
     warnings.warn("'Filter' is deprecated and will be removed in Mapnik 3.x, use 'Expression' instead",
-    DeprecationWarning, 2)
+                  DeprecationWarning, 2)
     return Expression(*args, **kwargs)
 
+
 class Envelope(Box2d):
+
     def __init__(self, *args, **kwargs):
         warnings.warn("'Envelope' is deprecated and will be removed in Mapnik 3.x, use 'Box2d' instead",
-        DeprecationWarning, 2)
+                      DeprecationWarning, 2)
         Box2d.__init__(self, *args, **kwargs)
 
-class _Coord(Coord,_injector):
+
+class _Coord(Coord, _injector()):
     """
     Represents a point with two coordinates (either lon/lat or x/y).
 
@@ -133,6 +142,7 @@ class _Coord(Coord,_injector):
     >>> Coord(10, 10) == Coord(10, 10)
     True
     """
+
     def __repr__(self):
         return 'Coord(%s,%s)' % (self.x, self.y)
 
@@ -175,7 +185,8 @@ class _Coord(Coord,_injector):
         """
         return inverse_(self, projection)
 
-class _Box2d(Box2d,_injector):
+
+class _Box2d(Box2d, _injector()):
     """
     Represents a spatial envelope (i.e. bounding box).
 
@@ -183,7 +194,7 @@ class _Box2d(Box2d,_injector):
     Following operators are defined for Box2d:
 
     Addition:
-    e1 + e2 is equvalent to e1.expand_to_include(e2) but yields
+    e1 + e2 is equivalent to e1.expand_to_include(e2) but yields
     a new envelope instead of modifying e1
 
     Subtraction:
@@ -205,7 +216,7 @@ class _Box2d(Box2d,_injector):
 
     def __repr__(self):
         return 'Box2d(%s,%s,%s,%s)' % \
-            (self.minx,self.miny,self.maxx,self.maxy)
+            (self.minx, self.miny, self.maxx, self.maxy)
 
     def forward(self, projection):
         """
@@ -229,12 +240,13 @@ class _Box2d(Box2d,_injector):
         """
         return inverse_(self, projection)
 
-class _Projection(Projection,_injector):
+
+class _Projection(Projection, _injector()):
 
     def __repr__(self):
         return "Projection('%s')" % self.params()
 
-    def forward(self,obj):
+    def forward(self, obj):
         """
         Projects the given object (Box2d or Coord)
         from the geographic space into the cartesian space.
@@ -243,9 +255,9 @@ class _Projection(Projection,_injector):
           Box2d.forward(self, projection),
           Coord.forward(self, projection).
         """
-        return forward_(obj,self)
+        return forward_(obj, self)
 
-    def inverse(self,obj):
+    def inverse(self, obj):
         """
         Projects the given object (Box2d or Coord)
         from the cartesian space into the geographic space.
@@ -254,45 +266,51 @@ class _Projection(Projection,_injector):
           Box2d.inverse(self, projection),
           Coord.inverse(self, projection).
         """
-        return inverse_(obj,self)
+        return inverse_(obj, self)
 
-class _Feature(Feature,_injector):
+
+class _Feature(Feature, _injector()):
     __geo_interface__ = property(lambda self: json.loads(self.to_geojson()))
 
-class _Geometry(Geometry,_injector):
+
+class _Geometry(Geometry, _injector()):
     __geo_interface__ = property(lambda self: json.loads(self.to_geojson()))
 
-class _Datasource(Datasource,_injector):
 
-    def all_features(self,fields=None,variables={}):
-        query = Query(self.envelope())
-        query.set_variables(variables);
-        attributes = fields or self.fields()
-        for fld in attributes:
-            query.add_property_name(fld)
-        return self.features(query).features
+class _Datasource(Datasource, _injector()):
 
-    def featureset(self,fields=None,variables={}):
+    def featureset(self, fields = None, variables = {}):
         query = Query(self.envelope())
-        query.set_variables(variables);
+        query.set_variables(variables)
         attributes = fields or self.fields()
         for fld in attributes:
             query.add_property_name(fld)
         return self.features(query)
 
-class _Color(Color,_injector):
+    def __iter__(self, fields = None, variables = {}):
+        return self.featureset(fields, variables)
+    # backward caps helper
+    def all_features(self, fields=None, variables={}):
+        return self.__iter__(fields, variables)
+
+
+class _Color(Color, _injector()):
+
     def __repr__(self):
-        return "Color(R=%d,G=%d,B=%d,A=%d)" % (self.r,self.g,self.b,self.a)
+        return "Color(R=%d,G=%d,B=%d,A=%d)" % (self.r, self.g, self.b, self.a)
 
-class _SymbolizerBase(SymbolizerBase,_injector):
-     # back compatibility
-     @property
-     def filename(self):
-         return self['file']
 
-     @filename.setter
-     def filename(self, val):
-         self['file'] = val
+class _SymbolizerBase(SymbolizerBase, _injector()):
+    # back compatibility
+
+    @property
+    def filename(self):
+        return self['file']
+
+    @filename.setter
+    def filename(self, val):
+        self['file'] = val
+
 
 def _add_symbol_method_to_symbolizers(vars=globals()):
 
@@ -300,7 +318,7 @@ def _add_symbol_method_to_symbolizers(vars=globals()):
         return self
 
     def symbol_for_cls(self):
-        return getattr(self,self.type())()
+        return getattr(self, self.type())()
 
     for name, obj in vars.items():
         if name.endswith('Symbolizer') and not name.startswith('_'):
@@ -308,8 +326,9 @@ def _add_symbol_method_to_symbolizers(vars=globals()):
                 symbol = symbol_for_cls
             else:
                 symbol = symbol_for_subcls
-            type('dummy', (obj,_injector), {'symbol': symbol})
+            type('dummy', (obj, _injector()), {'symbol': symbol})
 _add_symbol_method_to_symbolizers()
+
 
 def Datasource(**keywords):
     """Wrapper around CreateDatasource.
@@ -329,6 +348,7 @@ def Datasource(**keywords):
 
 # convenience factory methods
 
+
 def Shapefile(**keywords):
     """Create a Shapefile Datasource.
 
@@ -347,6 +367,7 @@ def Shapefile(**keywords):
     """
     keywords['type'] = 'shape'
     return CreateDatasource(keywords)
+
 
 def CSV(**keywords):
     """Create a CSV Datasource.
@@ -378,6 +399,7 @@ def CSV(**keywords):
     keywords['type'] = 'csv'
     return CreateDatasource(keywords)
 
+
 def GeoJSON(**keywords):
     """Create a GeoJSON Datasource.
 
@@ -395,6 +417,7 @@ def GeoJSON(**keywords):
     keywords['type'] = 'geojson'
     return CreateDatasource(keywords)
 
+
 def PostGIS(**keywords):
     """Create a PostGIS Datasource.
 
@@ -409,7 +432,7 @@ def PostGIS(**keywords):
     Optional db connection keyword arguments:
       user -- database user to connect as (default: see postgres docs)
       password -- password for database user (default: see postgres docs)
-      host -- portgres hostname (default: see postgres docs)
+      host -- postgres hostname (default: see postgres docs)
       port -- postgres port (default: see postgres docs)
       initial_size -- integer size of connection pool (default: 1)
       max_size -- integer max of connection pool (default: 10)
@@ -437,6 +460,7 @@ def PostGIS(**keywords):
     keywords['type'] = 'postgis'
     return CreateDatasource(keywords)
 
+
 def PgRaster(**keywords):
     """Create a PgRaster Datasource.
 
@@ -451,7 +475,7 @@ def PgRaster(**keywords):
     Optional db connection keyword arguments:
       user -- database user to connect as (default: see postgres docs)
       password -- password for database user (default: see postgres docs)
-      host -- portgres hostname (default: see postgres docs)
+      host -- postgres hostname (default: see postgres docs)
       port -- postgres port (default: see postgres docs)
       initial_size -- integer size of connection pool (default: 1)
       max_size -- integer max of connection pool (default: 10)
@@ -482,6 +506,7 @@ def PgRaster(**keywords):
     """
     keywords['type'] = 'pgraster'
     return CreateDatasource(keywords)
+
 
 def Raster(**keywords):
     """Create a Raster (Tiff) Datasource.
@@ -514,6 +539,7 @@ def Raster(**keywords):
     keywords['type'] = 'raster'
     return CreateDatasource(keywords)
 
+
 def Gdal(**keywords):
     """Create a GDAL Raster Datasource.
 
@@ -534,8 +560,10 @@ def Gdal(**keywords):
     keywords['type'] = 'gdal'
     if 'bbox' in keywords:
         if isinstance(keywords['bbox'], (tuple, list)):
-            keywords['bbox'] = ','.join([str(item) for item in keywords['bbox']])
+            keywords['bbox'] = ','.join([str(item)
+                                         for item in keywords['bbox']])
     return CreateDatasource(keywords)
+
 
 def Occi(**keywords):
     """Create a Oracle Spatial (10g) Vector Datasource.
@@ -566,6 +594,7 @@ def Occi(**keywords):
     keywords['type'] = 'occi'
     return CreateDatasource(keywords)
 
+
 def Ogr(**keywords):
     """Create a OGR Vector Datasource.
 
@@ -588,6 +617,7 @@ def Ogr(**keywords):
     keywords['type'] = 'ogr'
     return CreateDatasource(keywords)
 
+
 def SQLite(**keywords):
     """Create a SQLite Datasource.
 
@@ -599,7 +629,7 @@ def SQLite(**keywords):
       base -- path prefix (default None)
       encoding -- file encoding (default 'utf-8')
       extent -- manually specified data extent (comma delimited string, default None)
-      metadata -- name of auxillary table containing record for table with xmin, ymin, xmax, ymax, and f_table_name
+      metadata -- name of auxiliary table containing record for table with xmin, ymin, xmax, ymax, and f_table_name
       geometry_field -- name of geometry field (default 'the_geom')
       key_field -- name of primary key field (default 'OGC_FID')
       row_offset -- specify a custom integer row offset (default 0)
@@ -615,6 +645,7 @@ def SQLite(**keywords):
     """
     keywords['type'] = 'sqlite'
     return CreateDatasource(keywords)
+
 
 def Rasterlite(**keywords):
     """Create a Rasterlite Datasource.
@@ -635,6 +666,7 @@ def Rasterlite(**keywords):
     """
     keywords['type'] = 'rasterlite'
     return CreateDatasource(keywords)
+
 
 def Osm(**keywords):
     """Create a Osm Datasource.
@@ -658,6 +690,7 @@ def Osm(**keywords):
     keywords['type'] = 'osm'
     return CreateDatasource(keywords)
 
+
 def Python(**keywords):
     """Create a Python Datasource.
 
@@ -669,6 +702,7 @@ def Python(**keywords):
     keywords['type'] = 'python'
     return CreateDatasource(keywords)
 
+
 def MemoryDatasource(**keywords):
     """Create a Memory Datasource.
 
@@ -676,8 +710,9 @@ def MemoryDatasource(**keywords):
         (TODO)
     """
     params = Parameters()
-    params.append(Parameter('type','memory'))
+    params.append(Parameter('type', 'memory'))
     return MemoryDatasourceBase(params)
+
 
 class PythonDatasource(object):
     """A base class for a Python data source.
@@ -687,6 +722,7 @@ class PythonDatasource(object):
       geometry_type -- one of the DataGeometryType enumeration values, default Point
       data_type -- one of the DataType enumerations, default Vector
     """
+
     def __init__(self, envelope=None, geometry_type=None, data_type=None):
         self.envelope = envelope or Box2d(-180, -90, 180, 90)
         self.geometry_type = geometry_type or DataGeometryType.Point
@@ -701,7 +737,7 @@ class PythonDatasource(object):
         return None
 
     def features_at_point(self, point):
-        """Rarely uses. Return an iterable which yields instances of Feature for the specified point."""
+        """Rarely used. Return an iterable which yields instances of Feature for the specified point."""
         return None
 
     @classmethod
@@ -770,14 +806,17 @@ class PythonDatasource(object):
 
         return itertools.imap(make_it, features, itertools.count(1))
 
-class _TextSymbolizer(TextSymbolizer,_injector):
+
+class _TextSymbolizer(TextSymbolizer, _injector()):
+
     @property
     def name(self):
         if isinstance(self.properties.format_tree, FormattingText):
             return self.properties.format_tree.text
         else:
             # There is no single expression which could be returned as name
-            raise RuntimeError("TextSymbolizer uses complex formatting features, but old compatibility interface is used to access it. Use self.properties.format_tree instead.")
+            raise RuntimeError(
+                "TextSymbolizer uses complex formatting features, but old compatibility interface is used to access it. Use self.properties.format_tree instead.")
 
     @name.setter
     def name(self, name):
@@ -799,7 +838,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def face_name(self, face_name):
         self.format.face_name = face_name
 
-
     @property
     def fontset(self):
         return self.format.fontset
@@ -807,7 +845,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @fontset.setter
     def fontset(self, fontset):
         self.format.fontset = fontset
-
 
     @property
     def character_spacing(self):
@@ -817,7 +854,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def character_spacing(self, character_spacing):
         self.format.character_spacing = character_spacing
 
-
     @property
     def line_spacing(self):
         return self.format.line_spacing
@@ -825,7 +861,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @line_spacing.setter
     def line_spacing(self, line_spacing):
         self.format.line_spacing = line_spacing
-
 
     @property
     def text_opacity(self):
@@ -835,7 +870,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def text_opacity(self, text_opacity):
         self.format.text_opacity = text_opacity
 
-
     @property
     def wrap_before(self):
         return self.format.wrap_before
@@ -843,7 +877,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @wrap_before.setter
     def wrap_before(self, wrap_before):
         self.format.wrap_before = wrap_before
-
 
     @property
     def text_transform(self):
@@ -853,7 +886,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def text_transform(self, text_transform):
         self.format.text_transform = text_transform
 
-
     @property
     def fill(self):
         return self.format.fill
@@ -861,7 +893,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @fill.setter
     def fill(self, fill):
         self.format.fill = fill
-
 
     @property
     def halo_fill(self):
@@ -871,8 +902,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def halo_fill(self, halo_fill):
         self.format.halo_fill = halo_fill
 
-
-
     @property
     def halo_radius(self):
         return self.format.halo_radius
@@ -880,7 +909,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @halo_radius.setter
     def halo_radius(self, halo_radius):
         self.format.halo_radius = halo_radius
-
 
     @property
     def label_placement(self):
@@ -890,8 +918,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def label_placement(self, label_placement):
         self.properties.label_placement = label_placement
 
-
-
     @property
     def horizontal_alignment(self):
         return self.properties.horizontal_alignment
@@ -899,8 +925,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @horizontal_alignment.setter
     def horizontal_alignment(self, horizontal_alignment):
         self.properties.horizontal_alignment = horizontal_alignment
-
-
 
     @property
     def justify_alignment(self):
@@ -910,8 +934,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def justify_alignment(self, justify_alignment):
         self.properties.justify_alignment = justify_alignment
 
-
-
     @property
     def vertical_alignment(self):
         return self.properties.vertical_alignment
@@ -919,8 +941,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @vertical_alignment.setter
     def vertical_alignment(self, vertical_alignment):
         self.properties.vertical_alignment = vertical_alignment
-
-
 
     @property
     def orientation(self):
@@ -930,8 +950,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def orientation(self, orientation):
         self.properties.orientation = orientation
 
-
-
     @property
     def displacement(self):
         return self.properties.displacement
@@ -939,8 +957,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @displacement.setter
     def displacement(self, displacement):
         self.properties.displacement = displacement
-
-
 
     @property
     def label_spacing(self):
@@ -950,8 +966,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def label_spacing(self, label_spacing):
         self.properties.label_spacing = label_spacing
 
-
-
     @property
     def label_position_tolerance(self):
         return self.properties.label_position_tolerance
@@ -959,8 +973,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @label_position_tolerance.setter
     def label_position_tolerance(self, label_position_tolerance):
         self.properties.label_position_tolerance = label_position_tolerance
-
-
 
     @property
     def avoid_edges(self):
@@ -970,8 +982,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def avoid_edges(self, avoid_edges):
         self.properties.avoid_edges = avoid_edges
 
-
-
     @property
     def minimum_distance(self):
         return self.properties.minimum_distance
@@ -979,8 +989,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @minimum_distance.setter
     def minimum_distance(self, minimum_distance):
         self.properties.minimum_distance = minimum_distance
-
-
 
     @property
     def minimum_padding(self):
@@ -990,8 +998,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def minimum_padding(self, minimum_padding):
         self.properties.minimum_padding = minimum_padding
 
-
-
     @property
     def minimum_path_length(self):
         return self.properties.minimum_path_length
@@ -999,8 +1005,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @minimum_path_length.setter
     def minimum_path_length(self, minimum_path_length):
         self.properties.minimum_path_length = minimum_path_length
-
-
 
     @property
     def maximum_angle_char_delta(self):
@@ -1010,7 +1014,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def maximum_angle_char_delta(self, maximum_angle_char_delta):
         self.properties.maximum_angle_char_delta = maximum_angle_char_delta
 
-
     @property
     def allow_overlap(self):
         return self.properties.allow_overlap
@@ -1019,8 +1022,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     def allow_overlap(self, allow_overlap):
         self.properties.allow_overlap = allow_overlap
 
-
-
     @property
     def text_ratio(self):
         return self.properties.text_ratio
@@ -1028,8 +1029,6 @@ class _TextSymbolizer(TextSymbolizer,_injector):
     @text_ratio.setter
     def text_ratio(self, text_ratio):
         self.properties.text_ratio = text_ratio
-
-
 
     @property
     def wrap_width(self):
@@ -1043,26 +1042,29 @@ class _TextSymbolizer(TextSymbolizer,_injector):
 def mapnik_version_from_string(version_string):
     """Return the Mapnik version from a string."""
     n = version_string.split('.')
-    return (int(n[0]) * 100000) + (int(n[1]) * 100) + (int(n[2]));
+    return (int(n[0]) * 100000) + (int(n[1]) * 100) + (int(n[2]))
+
 
 def register_plugins(path=None):
     """Register plugins located by specified path"""
     if not path:
-        if os.environ.has_key('MAPNIK_INPUT_PLUGINS_DIRECTORY'):
+        if 'MAPNIK_INPUT_PLUGINS_DIRECTORY' in os.environ:
             path = os.environ.get('MAPNIK_INPUT_PLUGINS_DIRECTORY')
         else:
-            from paths import inputpluginspath
+            from .paths import inputpluginspath
             path = inputpluginspath
     DatasourceCache.register_datasources(path)
 
-def register_fonts(path=None,valid_extensions=['.ttf','.otf','.ttc','.pfa','.pfb','.ttc','.dfont','.woff']):
+
+def register_fonts(path=None, valid_extensions=[
+                   '.ttf', '.otf', '.ttc', '.pfa', '.pfb', '.ttc', '.dfont', '.woff']):
     """Recursively register fonts using path argument as base directory"""
     if not path:
-       if os.environ.has_key('MAPNIK_FONT_DIRECTORY'):
-           path = os.environ.get('MAPNIK_FONT_DIRECTORY')
-       else:
-           from paths import fontscollectionpath
-           path = fontscollectionpath
+        if 'MAPNIK_FONT_DIRECTORY' in os.environ:
+            path = os.environ.get('MAPNIK_FONT_DIRECTORY')
+        else:
+            from .paths import fontscollectionpath
+            path = fontscollectionpath
     for dirpath, _, filenames in os.walk(path):
         for filename in filenames:
             if os.path.splitext(filename.lower())[1] in valid_extensions:

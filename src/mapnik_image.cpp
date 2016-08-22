@@ -21,15 +21,10 @@
  *****************************************************************************/
 
 #include <mapnik/config.hpp>
-
-// boost
 #include "boost_std_shared_shim.hpp"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-local-typedef"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wshadow"
 
+#pragma GCC diagnostic push
+#include <mapnik/warning_ignore.hpp>
 #include <boost/python.hpp>
 #include <boost/python/module.hpp>
 #include <boost/python/def.hpp>
@@ -48,7 +43,11 @@
 #if defined(HAVE_CAIRO) && defined(HAVE_PYCAIRO)
 #include <mapnik/cairo/cairo_context.hpp>
 #include <mapnik/cairo/cairo_image_util.hpp>
+#if PY_MAJOR_VERSION >= 3
+#include <py3cairo.h>
+#else
 #include <pycairo.h>
+#endif
 #include <cairo.h>
 #endif
 
@@ -143,7 +142,7 @@ std::shared_ptr<image_any> copy(mapnik::image_any const& im, mapnik::image_dtype
     return std::make_shared<image_any>(mapnik::image_copy(im, type, offset, scaling));
 }
 
-unsigned compare(mapnik::image_any const& im1, mapnik::image_any const& im2, double threshold, bool alpha)
+std::size_t compare(mapnik::image_any const& im1, mapnik::image_any const& im2, double threshold, bool alpha)
 {
     return mapnik::compare(im1, im2, threshold, alpha);
 }

@@ -22,12 +22,14 @@
 #ifndef MAPNIK_PYTHON_BINDING_GRID_UTILS_INCLUDED
 #define MAPNIK_PYTHON_BINDING_GRID_UTILS_INCLUDED
 
-// boost
-#include <boost/python.hpp>
-
 // mapnik
 #include <mapnik/map.hpp>
 #include <mapnik/grid/grid.hpp>
+
+#pragma GCC diagnostic push
+#include <mapnik/warning_ignore.hpp>
+#include <boost/python.hpp>
+#pragma GCC diagnostic pop
 
 namespace mapnik {
 
@@ -43,13 +45,6 @@ void grid2utf(T const& grid_type,
                      boost::python::list& l,
                      std::vector<typename T::lookup_type>& key_order,
                      unsigned int resolution);
-
-
-template <typename T>
-void grid2utf2(T const& grid_type,
-                      boost::python::list& l,
-                      std::vector<typename T::lookup_type>& key_order,
-                      unsigned int resolution);
 
 
 template <typename T>

@@ -21,17 +21,11 @@
  *****************************************************************************/
 
 #include <mapnik/config.hpp>
-
-// boost
 #include "boost_std_shared_shim.hpp"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-local-typedef"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wshadow"
 
+#pragma GCC diagnostic push
+#include <mapnik/warning_ignore.hpp>
 #include <boost/python.hpp>
-#include <boost/noncopyable.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #include <boost/python/iterator.hpp>
 #include <boost/iterator/transform_iterator.hpp>
@@ -387,7 +381,7 @@ void export_map()
              "by specifying a Mapnik Box2d.\n"
              "\n"
              "Usage:\n"
-             ">>> extext = Box2d(-180.0, -90.0, 180.0, 90.0)\n"
+             ">>> extent = Box2d(-180.0, -90.0, 180.0, 90.0)\n"
              ">>> m.zoom_to_box(extent)\n"
             )
 

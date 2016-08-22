@@ -21,15 +21,10 @@
  *****************************************************************************/
 
 #include <mapnik/config.hpp>
-
-// boost
 #include "boost_std_shared_shim.hpp"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-local-typedef"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wshadow"
 
+#pragma GCC diagnostic push
+#include <mapnik/warning_ignore.hpp>
 #include <boost/python.hpp>
 #pragma GCC diagnostic pop
 
@@ -163,7 +158,7 @@ mapnik::parameter get_params_by_index(mapnik::parameters const& p, int index)
     throw boost::python::error_already_set();
 }
 
-unsigned get_params_size(mapnik::parameters const& p)
+std::size_t get_params_size(mapnik::parameters const& p)
 {
     return p.size();
 }

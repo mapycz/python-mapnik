@@ -21,17 +21,12 @@
  *****************************************************************************/
 
 #include <mapnik/config.hpp>
-
-// boost
 #include "boost_std_shared_shim.hpp"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-local-typedef"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wshadow"
 
+#pragma GCC diagnostic push
+#include <mapnik/warning_ignore.hpp>
 #include <boost/python.hpp>
-#include <boost/noncopyable.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #pragma GCC diagnostic pop
 
 #include <mapnik/debug.hpp>
@@ -65,7 +60,7 @@ void export_logger()
         .def("get_object_severity", &logger::get_object_severity)
         .def("set_object_severity", &logger::set_object_severity)
         .def("clear_object_severity", &logger::clear_object_severity)
-        .def("get_format", &logger::get_format)
+        .def("get_format", &logger::get_format,return_value_policy<reference_existing_object>())
         .def("set_format", &logger::set_format)
         .def("str", &logger::str)
         .def("use_file", &logger::use_file)

@@ -1,63 +1,109 @@
-language: cpp
-
-sudo: false
+language: generic
 
 git:
   submodules: true
   depth: 10
 
+addons:
+  postgresql: "9.4"
+
 matrix:
   include:
-     - os: linux
-       compiler: clang
-     - os: osx
-       compiler: clang
+    - os: linux
+      sudo: false
+      compiler: ": clang"
+      # note: only using ccache for CC is intentional here to
+      # workaround an odd bug in distutils that manifests when only `ccache` is used to link
+      # because distutils also has a bug whereby CC is used to compile instead of CXX, this works :)
+      env: JOBS=8 CXX="clang++-3.8 -Qunused-arguments" CC="ccache clang-3.8"
+      addons:
+        apt:
+          sources: [ 'ubuntu-toolchain-r-test']
+          packages: [ 'libstdc++-5-dev', 'gdb', 'apport']
+    # disabled until I have time to fix https://github.com/mapnik/python-mapnik/issues/95
+    #- os: osx
+    #  osx_image: xcode7.3 # upgrades clang from 6 -> 7
+    #  compiler: clang
+    #  env: JOBS=4
+
+cache:
+  directories:
+  - $HOME/.ccache
 
 env:
   global:
     - secure: "CqhZDPctJcpXGPpmIPK5usD/O+2HYawW3434oDufVS9uG/+C7aHzKzi8cuZ7n/REHqJMzy7gJfp6DiyF2QowpnN1L2W0FSJ9VOgj4JQF2Wsupo6gJkq6/CW2Fa35PhQHsv29bfyqtIq+R5SBVAieBe/Lh2P144RwRliGRopGQ68="
     - secure: "idk4fdU49i546Zs6Fxha14H05eRJ1G/D6NPRaie8M8o+xySnEqf+TyA9/HU8QH7cFvroSLuHJ1U7TmwnR+sXy4XBlIfHLi4u2MN+l/q014GG7T2E2xYcTauqjB4ldToRsDQwe5Dq0gZCMsHLPspWPjL9twfp+Ds7qgcFhTsct0s="
-
-addons:
-  postgresql: "9.4"
-  apt:
-    sources:
-     - ubuntu-toolchain-r-test
-     - llvm-toolchain-precise-3.5
-    packages:
-     - clang-3.5
+    - BOOST_PYTHON_LIB="boost_python"
+    - BOOST_SYSTEM_LIB="boost_system"
+    - BOOST_THREAD_LIB="boost_thread"
+    - CCACHE_TEMPDIR=/tmp/.ccache-temp
+    - CCACHE_COMPRESS=1
 
 before_install:
- - export COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
+ # workaround travis rvm bug
+ # http://superuser.com/questions/1044130/why-am-i-having-how-can-i-fix-this-error-shell-session-update-command-not-f
+ - |
+   if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+     rvm get head || true
+   fi
+ - source scripts/setup_mason.sh
+ - export PYTHONUSERBASE=$(pwd)/mason_packages/.link
+ - export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages
+ - export PATH=$(pwd)/mason_packages/.link/bin:${PYTHONUSERBASE}/bin:${PATH}
  - export MASON_BUILD=true
- - if [[ $(uname -s) == 'Linux' ]]; then
-     psql -U postgres -c 'create database template_postgis;' -U postgres;
-     psql -U postgres -c 'create extension postgis;' -d template_postgis -U postgres;
-     export CXX="clang++-3.5";
-     export CC="clang++-3.5";
-     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python2.7/site-packages;
+ - export COMMIT_MESSAGE=$(git show -s --format=%B $TRAVIS_COMMIT | tr -d '\n')
+ - |
+   if [[ $(uname -s) == 'Linux' ]]; then
+     export LDSHARED=$(python -c "import os;from distutils import sysconfig;print sysconfig.get_config_var('LDSHARED').replace('cc ','clang++-3.8 ')");
+     ./.mason/mason install clang 3.8.0
+     export PATH=$(./.mason/mason prefix clang 3.8.0)/bin:${PATH}
+     which clang++
    else
-     export PYTHONPATH=$(pwd)/mason_packages/.link/lib/python/site-packages;
-   fi;
- - PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user nose
- - PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user wheel
- - PYTHONUSERBASE=$(pwd)/mason_packages/.link pip install --user twine
+     sudo easy_install pip;
+     brew info postgres;
+     export DATA_PATH=$(brew --prefix)/var/postgres;
+     rm -rf ${DATA_PATH};
+     initdb ${DATA_PATH} -E utf8;
+     pg_ctl -w start -l postgres.log --pgdata ${DATA_PATH};
+     cat postgres.log;
+     createuser -s postgres;
+     export LDSHARED=$(python -c "import os;from distutils import sysconfig;print sysconfig.get_config_var('LDSHARED').replace('cc ','clang++ ')");
+   fi
+ - psql -c 'create database template_postgis;' -U postgres
+ - psql -c 'create extension postgis;' -d template_postgis -U postgres
+ - pip install --upgrade --user nose
+ - pip install --upgrade --user wheel
+ - pip install --upgrade --user twine
+ - pip install --upgrade --user setuptools
  - python --version
 
 install:
- - python setup.py install --prefix $(pwd)/mason_packages/.link
+ - mkdir -p ${PYTHONPATH}
+ - python setup.py install --prefix ${PYTHONUSERBASE}
 
 before_script:
- - python test/run_tests.py -q
+ - ulimit -c unlimited -S
+ - RESULT=0
+ - python test/run_tests.py || RESULT=$?
+ - ls -l .
+ - for i in $(find ./ -maxdepth 1 -name 'core*' -print); do gdb $(which python) $i -ex "thread apply all bt" -ex "set pagination 0" -batch; done;
+ - if [[ ${RESULT} != 0 ]]; then exit $RESULT; fi
 
 script:
  - python test/visual.py -q
- - if [[ ${COMMIT_MESSAGE} =~ "[publish]" ]]; then
-    python setup.py bdist_wheel;
-    if [[ $(uname -s) == 'Linux' ]]; then
-        export PRE_DISTS='dist/*.whl';
-        rename 's/linux_x86_64/any/;' $PRE_DISTS;
-    fi;
-    export DISTS='dist/*';
-    $(pwd)/mason_packages/.link/bin/twine upload -u $PYPI_USER -p $PYPI_PASSWORD $DISTS ;
-   fi;
+ - |
+   if [[ ${COMMIT_MESSAGE} =~ "[publish]" ]]; then
+     python setup.py bdist_wheel
+     if [[ $(uname -s) == 'Linux' ]]; then
+        export PRE_DISTS='dist/*.whl'
+        rename 's/linux_x86_64/any/;' $PRE_DISTS
+     fi
+     export DISTS='dist/*'
+     $(pwd)/mason_packages/.link/bin/twine upload -u $PYPI_USER -p $PYPI_PASSWORD $DISTS
+   fi
+
+
+notifications:
+  slack:
+    secure: dZhYCFXTvn6zna7GhagCUcInfhoUf/AMkTpJKPnJgaGnS3DlfbnMsSU73J4hs46wCOFII3AfYUOI/SUEBZ15lkJHfBsCku0a5a2M8g5ddxKFoIM8gosH3dLjeGJ5Ou8zNQGyzokXidKfHC+Gh4UVGyn+aeXxglRmRkUeaP+GD1k=

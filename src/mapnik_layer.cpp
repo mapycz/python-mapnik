@@ -21,15 +21,10 @@
  *****************************************************************************/
 
 #include <mapnik/config.hpp>
-
-// boost
 #include "boost_std_shared_shim.hpp"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-local-typedef"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wshadow"
 
+#pragma GCC diagnostic push
+#include <mapnik/warning_ignore.hpp>
 #include <boost/python.hpp>
 #include <boost/python/suite/indexing/vector_indexing_suite.hpp>
 #pragma GCC diagnostic pop
@@ -301,7 +296,7 @@ void export_layer()
         .add_property("minimum_scale_denominator",
                       &layer::minimum_scale_denominator,
                       &layer::set_minimum_scale_denominator,
-                      "Get/Set the minimum scale demoninator of the layer.\n"
+                      "Get/Set the minimum scale denominator of the layer.\n"
                       "\n"
                       "Usage:\n"
                       ">>> from mapnik import Layer\n"

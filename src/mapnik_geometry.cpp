@@ -21,22 +21,16 @@
  *****************************************************************************/
 
 #include <mapnik/config.hpp>
-
-// boost
 #include "boost_std_shared_shim.hpp"
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-local-typedef"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wshadow"
 
+#pragma GCC diagnostic push
+#include <mapnik/warning_ignore.hpp>
 #include <boost/python.hpp>
+#include <boost/noncopyable.hpp>
 #include <boost/python/def.hpp>
 #include <boost/python/exception_translator.hpp>
 #include <boost/python/manage_new_object.hpp>
 #include <boost/python/iterator.hpp>
-#include <boost/noncopyable.hpp>
-#include <boost/version.hpp>
 #pragma GCC diagnostic pop
 
 // mapnik
@@ -151,8 +145,8 @@ mapnik::box2d<double> geometry_envelope_impl(mapnik::geometry::geometry<double> 
     return mapnik::geometry::envelope(geom);
 }
 
-// only Boost >= 1.56 contains the is_valid and is_simple functions
-#if BOOST_VERSION >= 105600
+// Mapnik requires Boost >= 1.58 for the is_valid and is_simple functions
+#if BOOST_VERSION >= 105800
 bool geometry_is_valid_impl(mapnik::geometry::geometry<double> const& geom)
 {
     return mapnik::geometry::is_valid(geom);
@@ -225,7 +219,7 @@ void export_geometry()
                                                 "Constructs a new Point object\n"))
         .add_property("x", &point<double>::x, "X coordinate")
         .add_property("y", &point<double>::y, "Y coordinate")
-#if BOOST_VERSION >= 105600
+#if BOOST_VERSION >= 105800
         .def("is_valid", &geometry_is_valid_impl)
         .def("is_simple", &geometry_is_simple_impl)
 #endif
@@ -237,7 +231,7 @@ void export_geometry()
     class_<line_string<double> >("LineString", init<>(
                       "Constructs a new LineString object\n"))
         .def("add_coord", &line_string<double>::add_coord, "Adds coord")
-#if BOOST_VERSION >= 105600
+#if BOOST_VERSION >= 105800
         .def("is_valid", &geometry_is_valid_impl)
         .def("is_simple", &geometry_is_simple_impl)
 #endif
@@ -256,7 +250,7 @@ void export_geometry()
         .add_property("exterior_ring", &polygon<double>::exterior_ring , "Exterior ring")
         .def("add_hole", &polygon_add_hole_impl, "Add interior ring")
         .def("num_rings", polygon_set_exterior_impl, "Number of rings (at least 1)")
-#if BOOST_VERSION >= 105600
+#if BOOST_VERSION >= 105800
         .def("is_valid", &geometry_is_valid_impl)
         .def("is_simple", &geometry_is_simple_impl)
 #endif
@@ -275,7 +269,7 @@ void export_geometry()
         .staticmethod("from_wkb")
         .def("__str__",&to_wkt_impl)
         .def("type",&geometry_type_impl)
-#if BOOST_VERSION >= 105600
+#if BOOST_VERSION >= 105800
         .def("is_valid", &geometry_is_valid_impl)
         .def("is_simple", &geometry_is_simple_impl)
 #endif

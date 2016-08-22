@@ -22,16 +22,10 @@
 #include <mapnik/config.hpp>
 #include "boost_std_shared_shim.hpp"
 
-// boost
 #pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wunused-local-typedef"
-#pragma GCC diagnostic ignored "-Wmissing-field-initializers"
-#pragma GCC diagnostic ignored "-Wshadow"
-
+#include <mapnik/warning_ignore.hpp>
 #include <boost/python.hpp>
 #pragma GCC diagnostic pop
-
 
 // mapnik
 #include <mapnik/coord.hpp>
