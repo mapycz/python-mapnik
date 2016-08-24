@@ -21,7 +21,7 @@ Standards-Version: 3.9.8
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-grass/python-mapnik.git
 Vcs-Git: https://anonscm.debian.org/git/pkg-grass/python-mapnik.git
 Homepage: https://github.com/mapnik/python-mapnik
-X-Python-Version: >= 2.5
+X-Python-Version: >= 2.7
 
 Package: szn-python-mapnik
 Architecture: any
