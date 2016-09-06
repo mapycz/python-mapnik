@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.5.7) Seznam; urgency=medium
+
+  * szn-mapnik 3.5.7
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Tue, 06 Sep 2016 14:06:36 +0000
+
 szn-python-mapnik (3:3.5.6) Seznam; urgency=low
 
   * style level, layer level comp-op and opacity for Cairo renderer
