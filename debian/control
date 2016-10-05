@@ -12,11 +12,14 @@ Build-Depends: debhelper (>= 9),
                python-cairo,
                python-cairo-dev,
                python-nose,
+               python-debian,
                python3-all-dev,
                python3-setuptools,
                python3-cairo,
                python3-cairo-dev,
-               python3-nose
+               python3-nose,
+               python3-debian
+
 Standards-Version: 3.9.8
 Vcs-Browser: https://anonscm.debian.org/cgit/pkg-grass/python-mapnik.git
 Vcs-Git: https://anonscm.debian.org/git/pkg-grass/python-mapnik.git
