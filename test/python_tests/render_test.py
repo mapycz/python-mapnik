@@ -250,7 +250,7 @@ def test_render_with_detector():
     eq_(detector.extent(), mapnik.Box2d(-0.0, -0.0, m.width, m.height))
     eq_(detector.extent(), mapnik.Box2d(-0.0, -0.0, 256.0, 256.0))
     eq_(detector.boxes(), [])
-    detector.insert(detector.extent())
+    detector.insert(detector.extent(), ['default'])
     eq_(detector.boxes(), [detector.extent()])
     im2 = mapnik.Image(256, 256)
     mapnik.render_with_detector(m, im2, detector)

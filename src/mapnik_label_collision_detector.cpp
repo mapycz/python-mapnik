@@ -30,44 +30,76 @@
 #include <boost/python/def.hpp>
 #pragma GCC diagnostic pop
 
-#include <mapnik/label_collision_detector.hpp>
+#include <mapnik/collision_cache.hpp>
 #include <mapnik/map.hpp>
+#include <mapnik/value_error.hpp>
 
 #include <list>
 
-using mapnik::label_collision_detector4;
+using collision_detector = mapnik::keyed_collision_cache<
+    mapnik::label_collision_detector4>;
 using mapnik::box2d;
 using mapnik::Map;
 
 namespace
 {
 
-std::shared_ptr<label_collision_detector4>
+std::shared_ptr<collision_detector>
 create_label_collision_detector_from_extent(box2d<double> const &extent)
 {
-    return std::make_shared<label_collision_detector4>(extent);
+    return std::make_shared<collision_detector>(extent);
 }
 
-std::shared_ptr<label_collision_detector4>
+std::shared_ptr<collision_detector>
 create_label_collision_detector_from_map(Map const &m)
 {
     double buffer = m.buffer_size();
     box2d<double> extent(-buffer, -buffer, m.width() + buffer, m.height() + buffer);
-    return std::make_shared<label_collision_detector4>(extent);
+    return std::make_shared<collision_detector>(extent);
 }
 
 boost::python::list
-make_label_boxes(std::shared_ptr<label_collision_detector4> det)
+make_label_boxes(std::shared_ptr<collision_detector> cache)
 {
     boost::python::list boxes;
+    std::vector<std::string> keys(cache->keys());
 
-    for (label_collision_detector4::query_iterator jtr = det->begin();
-         jtr != det->end(); ++jtr)
+    for (auto const & key : keys)
     {
-        boxes.append<box2d<double> >(jtr->get().box);
+        auto & det = cache->detector(key);
+        for (auto jtr = det.begin(); jtr != det.end(); ++jtr)
+        {
+            boxes.append<box2d<double>>(jtr->get().box);
+        }
     }
 
     return boxes;
+}
+
+void insert_box(
+    std::shared_ptr<collision_detector> cache,
+    box2d<double> const & box,
+    boost::python::list const & keys)
+{
+    boost::python::ssize_t num_keys = boost::python::len(keys);
+    std::vector<std::string> keys_vector;
+
+    for (boost::python::ssize_t i = 0; i < num_keys; ++i)
+    {
+        boost::python::extract<std::string> key(keys[i]);
+        if (key.check())
+        {
+            keys_vector.push_back(key());
+        }
+        else
+        {
+            std::stringstream s;
+            s << "list of keys must be strings";
+            throw mapnik::value_error(s.str());
+        }
+    }
+
+    cache->insert(box, keys_vector);
 }
 
 }
@@ -76,10 +108,7 @@ void export_label_collision_detector()
 {
     using namespace boost::python;
 
-    // for overload resolution
-    void (label_collision_detector4::*insert_box)(box2d<double> const &) = &label_collision_detector4::insert;
-
-    class_<label_collision_detector4, std::shared_ptr<label_collision_detector4>, boost::noncopyable>
+    class_<collision_detector, std::shared_ptr<collision_detector>, boost::noncopyable>
         ("LabelCollisionDetector",
          "Object to detect collisions between labels, used in the rendering process.",
          no_init)
@@ -104,7 +133,7 @@ void export_label_collision_detector()
              ">>> m = Map(size_x, size_y)\n"
              ">>> detector = mapnik.LabelCollisionDetector(m)")
 
-        .def("extent", &label_collision_detector4::extent, return_value_policy<copy_const_reference>(),
+        .def("extent", &collision_detector::extent, return_value_policy<copy_const_reference>(),
              "Returns the total extent (bounding box) of all labels inside the detector.\n"
              "\n"
              "Example:\n"
@@ -114,14 +143,14 @@ void export_label_collision_detector()
         .def("boxes", &make_label_boxes,
              "Returns a list of all the label boxes inside the detector.")
 
-        .def("insert", insert_box,
-             "Insert a 2d box into the collision detector. This can be used to ensure that "
+        .def("insert", &insert_box,
+             "Insert a 2d box into collision detectors by given keys. This can be used to ensure that "
              "some space is left clear on the map for later overdrawing, for example by "
              "non-Mapnik processes.\n"
              "\n"
              "Example:\n"
              ">>> m = Map(size_x, size_y)\n"
              ">>> detector = mapnik.LabelCollisionDetector(m)"
-             ">>> detector.insert(mapnik.Box2d(196, 254, 291, 389))")
+             ">>> detector.insert(mapnik.Box2d(196, 254, 291, 389), ['default', 'waterfield'])")
         ;
 }
