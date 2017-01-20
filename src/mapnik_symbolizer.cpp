@@ -252,18 +252,6 @@ void export_point_symbolizer()
 {
     using namespace boost::python;
 
-    mapnik::enumeration_<mapnik::label_placement_e>("point_placement")
-        .value("POINT",mapnik::POINT_PLACEMENT)
-        .value("LINE",mapnik::LINE_PLACEMENT)
-        .value("VERTEX",mapnik::VERTEX_PLACEMENT)
-        .value("INTERIOR",mapnik::INTERIOR_PLACEMENT)
-        .value("GRID",mapnik::GRID_PLACEMENT)
-        .value("VERTEX_FIRST",mapnik::VERTEX_FIRST_PLACEMENT)
-        .value("VERTEX_LAST",mapnik::VERTEX_LAST_PLACEMENT)
-        .value("CENTROID",mapnik::CENTROID_PLACEMENT)
-        .value("ALTERNATING_GRID",mapnik::ALTERNATING_GRID_PLACEMENT)
-        ;
-
     class_<point_symbolizer, bases<symbolizer_base> >("PointSymbolizer",
                              init<>("Default Point Symbolizer - 4x4 black square"))
         .def("__hash__",hash_impl_2<point_symbolizer>)
@@ -273,18 +261,6 @@ void export_point_symbolizer()
 void export_markers_symbolizer()
 {
     using namespace boost::python;
-
-    mapnik::enumeration_<mapnik::label_placement_e>("marker_placement")
-        .value("POINT",mapnik::POINT_PLACEMENT)
-        .value("LINE",mapnik::LINE_PLACEMENT)
-        .value("VERTEX",mapnik::VERTEX_PLACEMENT)
-        .value("INTERIOR",mapnik::INTERIOR_PLACEMENT)
-        .value("GRID",mapnik::GRID_PLACEMENT)
-        .value("VERTEX_FIRST",mapnik::VERTEX_FIRST_PLACEMENT)
-        .value("VERTEX_LAST",mapnik::VERTEX_LAST_PLACEMENT)
-        .value("CENTROID",mapnik::CENTROID_PLACEMENT)
-        .value("ALTERNATING_GRID",mapnik::ALTERNATING_GRID_PLACEMENT)
-        ;
 
     mapnik::enumeration_<mapnik::multi_policy_e>("marker_multi_policy")
         .value("EACH",mapnik::EACH_MULTI)
@@ -429,3 +405,21 @@ void export_group_symbolizer()
         ;
 
 }
+
+void export_label_placement()
+{
+    using namespace boost::python;
+
+    mapnik::enumeration_<mapnik::label_placement_e>("label_placement")
+        .value("POINT", mapnik::POINT_PLACEMENT)
+        .value("LINE", mapnik::LINE_PLACEMENT)
+        .value("VERTEX", mapnik::VERTEX_PLACEMENT)
+        .value("INTERIOR", mapnik::INTERIOR_PLACEMENT)
+        .value("GRID", mapnik::GRID_PLACEMENT)
+        .value("VERTEX_FIRST", mapnik::VERTEX_FIRST_PLACEMENT)
+        .value("VERTEX_LAST", mapnik::VERTEX_LAST_PLACEMENT)
+        .value("CENTROID", mapnik::CENTROID_PLACEMENT)
+        .value("ALTERNATING_GRID", mapnik::ALTERNATING_GRID_PLACEMENT)
+        ;
+}
+
