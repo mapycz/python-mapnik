@@ -16,8 +16,8 @@ PYTHON3 = sys.version_info.major == 3
 
 
 # Utils
-def check_output(args):
-    output = subprocess.check_output(args)
+def check_output(args, shell=False):
+    output = subprocess.check_output(args, shell=shell)
     if PYTHON3:
         # check_output returns bytes in PYTHON3.
         output = output.decode()
@@ -26,12 +26,22 @@ def check_output(args):
 
 def get_boost_library_paths():
     paths = []
+
     boost_path = os.environ.get("BOOST_LIBS")
+    if not boost_path:
+        boost_system_path = check_output(['ld -o /dev/null -lboost_system --verbose 2>/dev/null | grep succeeded | grep -o "/[^ ]*"'], shell=True)
+        if boost_system_path:
+            boost_path = os.path.dirname(boost_system_path)
+
+    if not boost_path:
+        raise Exception("Failed to find boost libs")
+
     python_lib = 'python-py{}{}'.format(
         sys.version_info.major, sys.version_info.minor)
     for name in [python_lib, 'thread', 'system']:
         paths.append(os.path.join(boost_path,
             'libboost_{}.a'.format(name)))
+
     return paths
 
 
