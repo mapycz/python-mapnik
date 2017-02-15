@@ -593,12 +593,12 @@ void standard_error_translator(std::exception const & ex)
 
 unsigned mapnik_version()
 {
-    return MAPNIK_VERSION;
+    return mapnik::version_number();
 }
 
 std::string mapnik_version_string()
 {
-    return MAPNIK_VERSION_STRING;
+    return mapnik::version_string();
 }
 
 bool has_proj4()
