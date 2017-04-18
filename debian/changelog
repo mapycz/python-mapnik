@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.7.5) Seznam; urgency=medium
+
+  * szn-mapnik 3.7.5
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Tue, 18 Apr 2017 20:52:41 +0000
+
 szn-python-mapnik (3:3.7.4) Seznam; urgency=medium
 
   * szn-mapnik 3.7.4
