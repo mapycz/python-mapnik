@@ -774,6 +774,7 @@ BOOST_PYTHON_MODULE(_mapnik)
     export_label_collision_detector();
     export_logger();
     export_label_placement();
+    export_mvt();
 
     def("clear_cache", &clear_cache,
         "\n"

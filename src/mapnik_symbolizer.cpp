@@ -205,11 +205,6 @@ void export_symbolizer()
 void export_text_symbolizer()
 {
     using namespace boost::python;
-    mapnik::enumeration_<mapnik::label_placement_e>("label_placement")
-        .value("LINE_PLACEMENT", mapnik::LINE_PLACEMENT)
-        .value("POINT_PLACEMENT", mapnik::POINT_PLACEMENT)
-        .value("VERTEX_PLACEMENT", mapnik::VERTEX_PLACEMENT)
-        .value("INTERIOR_PLACEMENT", mapnik::INTERIOR_PLACEMENT);
 
     mapnik::enumeration_<mapnik::vertical_alignment_e>("vertical_alignment")
         .value("TOP", mapnik::V_TOP)
