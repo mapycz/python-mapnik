@@ -1,3 +1,10 @@
+szn-python-mapnik (3:3.8.0) Seznam; urgency=medium
+
+  * merge with upstream
+  * mvt
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Fri, 12 May 2017 14:07:51 +0000
+
 szn-python-mapnik (3:3.7.6) Seznam; urgency=medium
 
   * szn-mapnik 3.7.6
