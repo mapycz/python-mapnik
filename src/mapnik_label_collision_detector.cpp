@@ -32,7 +32,7 @@
 
 #include <mapnik/collision_cache.hpp>
 #include <mapnik/map.hpp>
-#include <mapnik/value_error.hpp>
+#include <mapnik/value/error.hpp>
 
 #include <list>
 
