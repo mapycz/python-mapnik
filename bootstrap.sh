@@ -11,35 +11,32 @@ function install() {
     fi
 }
 
-ICU_VERSION="55.1"
+ICU_VERSION="57.1"
 
 function install_mason_deps() {
-    install mapnik latest &
-    install ccache 3.2.4 &
-    install jpeg_turbo 1.4.0 libjpeg &
-    install libpng 1.6.20 libpng &
-    install libtiff 4.0.4beta libtiff &
-    install libpq 9.4.1 &
-    install sqlite 3.8.8.3 libsqlite3 &
-    install expat 2.1.0 libexpat &
-    wait
-    install icu ${ICU_VERSION} &
-    install proj 4.8.0 libproj &
-    install pixman 0.32.6 libpixman-1 &
-    install cairo 1.14.2 libcairo &
-    wait
-    install webp 0.4.2 libwebp &
-    install gdal 1.11.2 libgdal &
-    install boost 1.61.0 &
-    install boost_libthread 1.61.0 &
-    install boost_libpython 1.61.0 &
-    install boost_libsystem 1.61.0 &
-    install boost_libfilesystem 1.61.0 &
-    install boost_libprogram_options 1.61.0 &
-    install boost_libregex 1.61.0 &
-    install freetype 2.6 libfreetype &
-    install harfbuzz 0.9.41 libharfbuzz &
-    wait
+    install mapnik 333ef9f
+    install jpeg_turbo 1.5.1 libjpeg
+    install libpng 1.6.28 libpng
+    install libtiff 4.0.7 libtiff
+    install libpq 9.6.2
+    install sqlite 3.17.0 libsqlite3
+    install expat 2.2.0 libexpat
+    install icu ${ICU_VERSION}
+    install proj 4.9.3 libproj
+    install pixman 0.34.0 libpixman-1
+    install cairo 1.14.8 libcairo
+    install webp 0.6.0 libwebp
+    install libgdal 2.1.3 libgdal
+    install boost 1.63.0
+    install boost_libsystem 1.63.0
+    install boost_libfilesystem 1.63.0
+    install boost_libprogram_options 1.63.0
+    install boost_libregex_icu57 1.63.0
+    install freetype 2.7.1 libfreetype
+    install harfbuzz 1.4.2-ft libharfbuzz
+    # deps needed by python-mapnik (not mapnik core)
+    install boost_libthread 1.63.0
+    install boost_libpython 1.63.0
 }
 
 function setup_runtime_settings() {
@@ -62,7 +59,7 @@ function main() {
     setup_runtime_settings
     echo "Ready, now run:"
     echo ""
-    echo "    make test"
+    echo "    python setup.py test"
 }
 
 main

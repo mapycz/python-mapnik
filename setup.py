@@ -110,7 +110,7 @@ if mason_build:
         if sys.platform == 'darwin':
             base_f = 'libmapnik.dylib'
         else:
-            base_f = 'libmapnik.so.3.0'
+            base_f = 'libmapnik.so'
         f = os.path.join(lib_path, base_f)
         if not os.path.exists(os.path.join('mapnik', 'lib')):
             os.makedirs(os.path.join('mapnik', 'lib'))
@@ -200,6 +200,8 @@ if mason_build:
 
 extra_comp_args = check_output([mapnik_config, '--cflags']).split(' ')
 
+extra_comp_args = list(filter(lambda arg: arg != "-fvisibility=hidden", extra_comp_args))
+
 if os.environ.get("PYCAIRO", "false") == "true":
     try:
         extra_comp_args.append('-DHAVE_PYCAIRO')
@@ -229,7 +231,7 @@ if os.environ.get("CXX", False) == False:
 setup(
     name="mapnik",
     version="0.1",
-    packages=['mapnik'],
+    packages=['mapnik','mapnik.printing'],
     author="Blake Thompson",
     author_email="flippmoke@gmail.com",
     description="Python bindings for Mapnik",
@@ -280,7 +282,6 @@ setup(
             'src/mapnik_style.cpp',
             'src/mapnik_svg_generator_grammar.cpp',
             'src/mapnik_symbolizer.cpp',
-            'src/mapnik_text_placement.cpp',
             'src/mapnik_view_transform.cpp',
             'src/python_grid_utils.cpp',
         ],

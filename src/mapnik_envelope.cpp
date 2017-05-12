@@ -30,8 +30,8 @@
 #pragma GCC diagnostic pop
 
 // mapnik
-#include <mapnik/box2d.hpp>
-#include <mapnik/value_error.hpp>
+#include <mapnik/geometry/box2d.hpp>
+#include <mapnik/value/error.hpp>
 
 using mapnik::coord;
 using mapnik::box2d;
