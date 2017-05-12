@@ -314,6 +314,7 @@ setup(
             'src/mapnik_view_transform.cpp',
             'src/mapnik_vector_tile.cpp',
             'src/python_grid_utils.cpp',
+            'deps/mvt/vector_tile.pb.cc',
         ],
             language='c++',
             extra_compile_args=extra_comp_args,

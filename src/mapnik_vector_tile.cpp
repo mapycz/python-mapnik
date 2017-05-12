@@ -57,5 +57,6 @@ void export_mvt()
     using namespace boost::python;
 
     def("create_mvt_merc", &create_mvt_merc,
-        "Creates MVT into a buffer");
+        "Creates MVT into a buffer\n"
+        "mapnik.create_mvt_merc(m, 2257, 1393, 12, 4096, 0,0,0,0)");
 }
