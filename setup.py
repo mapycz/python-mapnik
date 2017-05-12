@@ -27,9 +27,7 @@ def check_output(args):
 def get_boost_library_paths():
     paths = []
     boost_path = os.environ.get("BOOST_LIBS")
-    python_lib = 'python-py{}{}'.format(
-        sys.version_info.major, sys.version_info.minor)
-    for name in [python_lib, 'thread', 'system']:
+    for name in ['python', 'thread', 'system']:
         paths.append(os.path.join(boost_path,
             'libboost_{}.a'.format(name)))
     return paths
