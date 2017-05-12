@@ -91,6 +91,7 @@ void export_raster_colorizer();
 void export_label_collision_detector();
 void export_logger();
 void export_label_placement();
+void export_mvt();
 
 #include <mapnik/version.hpp>
 #include <mapnik/map.hpp>

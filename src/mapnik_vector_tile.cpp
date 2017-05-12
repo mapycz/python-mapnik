@@ -31,7 +31,9 @@
 #include "vector_tile_geometry_decoder.hpp"
 #include "vector_tile_load_tile.hpp"
 
-void create_mvt_merc(
+#include <boost/python.hpp>
+
+std::string create_mvt_merc(
     mapnik::Map const& map,
     std::uint64_t x,
     std::uint64_t y,
@@ -48,4 +50,12 @@ void create_mvt_merc(
     std::string output;
     mapnik::vector_tile_impl::zlib_compress(tile.data(), tile.size(), output);
     return output;
+}
+
+void export_mvt()
+{
+    using namespace boost::python;
+
+    def("create_mvt_merc", &create_mvt_merc,
+        "Creates MVT into a buffer");
 }
