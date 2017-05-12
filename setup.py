@@ -24,13 +24,48 @@ def check_output(args):
     return output.rstrip('\n')
 
 
-def get_boost_library_paths():
-    paths = []
-    boost_path = os.environ.get("BOOST_LIBS")
-    for name in ['python', 'thread', 'system']:
-        paths.append(os.path.join(boost_path,
-            'libboost_{}.a'.format(name)))
-    return paths
+def clean_boost_name(name):
+    name = name.split('.')[0]
+    if name.startswith('lib'):
+        name = name[3:]
+    return name
+
+
+def find_boost_library(_id):
+    suffixes = [
+        "",  # standard naming
+        "-mt"  # former naming schema for multithreading build
+    ]
+    if "python" in _id:
+        # Debian naming convention for versions installed in parallel
+        suffixes.insert(0, "-py%d%d" % (sys.version_info.major,
+                                        sys.version_info.minor))
+        # standard suffix for Python3
+        suffixes.insert(1, sys.version_info.major)
+    for suf in suffixes:
+        name = "%s%s" % (_id, suf)
+        lib = find_library(name)
+        if lib is not None:
+            return name
+
+
+def get_boost_library_names():
+    wanted = ['boost_python', 'boost_thread', 'boost_system']
+    found = []
+    missing = []
+    for _id in wanted:
+        name = os.environ.get("%s_LIB" % _id.upper(), find_boost_library(_id))
+        if name:
+            found.append(name)
+        else:
+            missing.append(_id)
+    if missing:
+        msg = ""
+        for name in missing:
+            msg += ("\nMissing {} boost library, try to add its name with "
+                    "{}_LIB environment var.").format(name, name.upper())
+        raise EnvironmentError(msg)
+    return found
 
 
 class WhichBoostCommand(Command):
@@ -44,7 +79,7 @@ class WhichBoostCommand(Command):
         pass
 
     def run(self):
-        print("\n".join(get_boost_library_paths()))
+        print("\n".join(get_boost_library_names()))
 
 
 cflags = sysconfig.get_config_var('CFLAGS')
@@ -79,7 +114,11 @@ linkflags = []
 lib_path = os.path.join(check_output([mapnik_config, '--prefix']),'lib')
 linkflags.extend(check_output([mapnik_config, '--libs']).split(' '))
 linkflags.extend(check_output([mapnik_config, '--ldflags']).split(' '))
-linkflags.extend([ '-lmapnik-wkt', '-lmapnik-json'])
+linkflags.extend(check_output([mapnik_config, '--dep-libs']).split(' '))
+linkflags.extend([
+'-lmapnik-wkt',
+'-lmapnik-json',
+] + ['-l%s' % i for i in get_boost_library_names()])
 
 # Dynamically make the mapnik/paths.py file if it doesn't exist.
 if os.path.isfile('mapnik/paths.py'):
@@ -276,7 +315,6 @@ setup(
             language='c++',
             extra_compile_args=extra_comp_args,
             extra_link_args=linkflags,
-            extra_objects=get_boost_library_paths()
         )
     ]
 )
