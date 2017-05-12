@@ -255,6 +255,8 @@ if os.environ.get("CC", False) == False:
 if os.environ.get("CXX", False) == False:
     os.environ["CXX"] = check_output([mapnik_config, '--cxx'])
 
+extra_comp_args.append("-Ideps/mvt")
+
 setup(
     name="mapnik",
     version="0.1",
@@ -310,6 +312,7 @@ setup(
             'src/mapnik_svg_generator_grammar.cpp',
             'src/mapnik_symbolizer.cpp',
             'src/mapnik_view_transform.cpp',
+            'src/mapnik_vector_tile.cpp',
             'src/python_grid_utils.cpp',
         ],
             language='c++',
