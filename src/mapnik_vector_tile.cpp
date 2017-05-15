@@ -47,9 +47,10 @@ std::string create_mvt_merc(
     mapnik::vector_tile_impl::processor proc(map);
     mapnik::vector_tile_impl::merc_tile tile(proc.create_tile(
         x, y, z, tile_size, buffer_size, scale_denom, offset_x, offset_y));
-    std::string output;
-    mapnik::vector_tile_impl::zlib_compress(tile.data(), tile.size(), output);
-    return output;
+    return tile.get_buffer();
+    //std::string output;
+    //mapnik::vector_tile_impl::zlib_compress(tile.data(), tile.size(), output);
+    //return output;
 }
 
 void export_mvt()
