@@ -283,6 +283,7 @@ setup(
             'src/mapnik_text_placement.cpp',
             'src/mapnik_view_transform.cpp',
             'src/python_grid_utils.cpp',
+            'src/mapnik_vector_tile.cpp',
         ],
             language='c++',
             extra_compile_args=extra_comp_args,
