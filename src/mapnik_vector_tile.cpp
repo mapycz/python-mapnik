@@ -23,8 +23,8 @@
 #include <mapnik/config.hpp>
 
 #include <mapbox/mapnik-vector-tile/vector_tile_merc_tile.hpp>
-#include <mapbox/mapnik-vector-tile/vector_tile_compression.hpp>
 #include <mapbox/mapnik-vector-tile/vector_tile_processor.hpp>
+#include <mapbox/mapnik-vector-tile/vector_tile_compression.hpp>
 
 #include <boost/python.hpp>
 
@@ -61,13 +61,13 @@ void export_mvt()
          arg("x"),
          arg("y"),
          arg("z"),
-         arg("tile_size")=4096,
-         arg("buffer_size")=0,
-         arg("scale_denom")=0.0,
-         arg("offset_x")=0,
-         arg("offset_y")=0),
+         arg("tile_size") = 4096,
+         arg("buffer_size") = 0,
+         arg("scale_denom") = 0.0,
+         arg("offset_x") = 0,
+         arg("offset_y") = 0),
         "Creates MVT into a buffer\n"
-        "mapnik.create_mvt_merc(m, 2257, 1393, 12, 4096, 0,0,0,0)");
+        "mapnik.create_mvt_merc(m, 2257, 1393, 12, 4096, 0, 0, 0, 0)");
 
     def("compress_mvt", &compress_mvt,
         "gzip compression");
