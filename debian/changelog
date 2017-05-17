@@ -1,3 +1,10 @@
+szn-python-mapnik (3:3.7.7) Seznam; urgency=medium
+
+  * basic support for MVT
+  * szn-mapnik 3.7.7
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 17 May 2017 15:36:55 +0000
+
 szn-python-mapnik (3:3.7.6) Seznam; urgency=medium
 
   * szn-mapnik 3.7.6
