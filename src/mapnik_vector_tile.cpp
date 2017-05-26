@@ -33,11 +33,11 @@ std::string create_mvt_merc(
     std::uint64_t x,
     std::uint64_t y,
     std::uint64_t z,
-    std::uint32_t tile_size = 4096,
-    std::int32_t buffer_size = 0,
-    double scale_denom = 0.0,
-    int offset_x = 0,
-    int offset_y = 0)
+    std::uint32_t tile_size,
+    std::int32_t buffer_size,
+    double scale_denom,
+    int offset_x,
+    int offset_y
 {
     mapnik::vector_tile_impl::processor proc(map);
     mapnik::vector_tile_impl::merc_tile tile(proc.create_tile(
