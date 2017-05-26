@@ -37,11 +37,13 @@ std::string create_mvt_merc(
     std::int32_t buffer_size,
     double scale_denom,
     int offset_x,
-    int offset_y
+    int offset_y,
+    bool style_level_filter)
 {
     mapnik::vector_tile_impl::processor proc(map);
     mapnik::vector_tile_impl::merc_tile tile(proc.create_tile(
-        x, y, z, tile_size, buffer_size, scale_denom, offset_x, offset_y));
+        x, y, z, tile_size, buffer_size, scale_denom,
+        offset_x, offset_y, style_level_filter));
     return tile.get_buffer();
 }
 
@@ -65,7 +67,8 @@ void export_mvt()
          arg("buffer_size") = 0,
          arg("scale_denom") = 0.0,
          arg("offset_x") = 0,
-         arg("offset_y") = 0),
+         arg("offset_y") = 0,
+         arg("style_level_filter") = false),
         "Creates MVT into a buffer\n"
         "mapnik.create_mvt_merc(m, 2257, 1393, 12, 4096, 0, 0, 0, 0)");
 
