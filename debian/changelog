@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.7.9) Seznam; urgency=medium
+
+  * mvt: rule level feature filter
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 31 May 2017 12:40:24 +0000
+
 szn-python-mapnik (3:3.7.8) Seznam; urgency=medium
 
   * add style_level_filter parameter to create_mvt_merc()
