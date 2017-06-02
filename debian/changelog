@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.7.10) Seznam; urgency=medium
+
+  * szn-mapnik 3.7.10
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Fri, 02 Jun 2017 15:15:18 +0000
+
 szn-python-mapnik (3:3.7.9) Seznam; urgency=medium
 
   * mvt: rule level feature filter
