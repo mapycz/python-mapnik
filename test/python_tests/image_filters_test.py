@@ -32,7 +32,7 @@ def test_append():
 if 'shape' in mapnik.DatasourceCache.plugin_names():
     def test_style_level_image_filter():
         m = mapnik.Map(256, 256)
-        mapnik.load_map(m, '../data/good_maps/style_level_image_filter.xml')
+        mapnik.load_map(m, '../data/good_maps/style_level_image_filter_no_text.xml')
         m.zoom_all()
         successes = []
         fails = []
@@ -46,11 +46,8 @@ if 'shape' in mapnik.DatasourceCache.plugin_names():
             # find_style returns a copy of the style object
             style_markers = m.find_style("markers")
             style_markers.image_filters = name
-            style_labels = m.find_style("labels")
-            style_labels.image_filters = name
             # replace the original style with the modified one
             replace_style(m, "markers", style_markers)
-            replace_style(m, "labels", style_labels)
             im = mapnik.Image(m.width, m.height)
             mapnik.render(m, im)
             actual = '/tmp/mapnik-style-image-filter-' + filename + '.png'
