@@ -297,7 +297,8 @@ def render(filename, config, scale_factor, reporting):
             return
     except Exception as e:
         if 'Could not create datasource' in str(e) \
-           or 'Bad connection' in str(e):
+           or 'Bad connection' in str(e) \
+           or 'Postgis Plugin: could not connect to server' in str(e):
             return m
         reporting.other_error(filename, repr(e))
         return m
