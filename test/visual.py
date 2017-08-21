@@ -348,17 +348,15 @@ def render(filename, config, scale_factor, reporting):
     return m
 
 if __name__ == "__main__":
+    quiet = False
     if '-q' in sys.argv:
         quiet = True
         sys.argv.remove('-q')
-    else:
-        quiet = False
 
+    overwrite_failures = False
     if '--overwrite' in sys.argv:
         overwrite_failures = True
         sys.argv.remove('--overwrite')
-    else:
-        overwrite_failures = False
 
     files = None
     if len(sys.argv) > 1:
