@@ -27,7 +27,8 @@ defaults = {
     'scales': [1.0, 2.0],
     'agg': True,
     'cairo': mapnik.has_cairo(),
-    'grid': mapnik.has_grid_renderer()
+    'grid': mapnik.has_grid_renderer(),
+    'ignored_renderers': []
 }
 
 cairo_threshold = 10
@@ -306,6 +307,10 @@ def render(filename, config, scale_factor, reporting):
         sizes = [[int(i) for i in size.split(',')]
                  for size in m.parameters['sizes'].split(';')]
 
+    ignored_renderers = config['ignored_renderers']
+    if 'ignored_renderers' in m.parameters:
+        ignored_renderers = m.parameters['ignored_renderers'].split(',')
+
     for size in sizes:
         m.width, m.height = size
 
@@ -318,6 +323,8 @@ def render(filename, config, scale_factor, reporting):
         name = filename[0:-4]
         postfix = "%s-%d-%d-%s" % (name, m.width, m.height, scale_factor)
         for renderer in renderers:
+            if renderer['name'] in ignored_renderers:
+                continue
             if config.get(renderer['name'], True):
                 expected = os.path.join(dirname, renderer['dir'], '%s-%s-reference.%s' %
                                         (postfix, renderer['name'], renderer['filetype']))
