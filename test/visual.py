@@ -27,7 +27,8 @@ defaults = {
     'scales': [1.0, 2.0],
     'agg': True,
     'cairo': mapnik.has_cairo(),
-    'grid': mapnik.has_grid_renderer()
+    'grid': mapnik.has_grid_renderer(),
+    'ignored_renderers': []
 }
 
 cairo_threshold = 10
@@ -140,11 +141,12 @@ class Reporting:
     OTHER = 3
     REPLACE = 4
 
-    def __init__(self, quiet, overwrite_failures=False):
+    def __init__(self, quiet, overwrite_failures, only_errors):
         self.quiet = quiet
         self.passed = 0
         self.failed = 0
         self.overwrite_failures = overwrite_failures
+        self.only_errors = only_errors
         self.errors = [  # (type, actual, expected, diff, message)
         ]
 
@@ -224,19 +226,25 @@ class Reporting:
                 self.passed)
             return 0
         sortable_errors = []
+        error_count = 0
         print("\nVisual rendering: %s failed / %s passed" %
               (len(self.errors), self.passed))
         for idx, error in enumerate(self.errors):
             if error[0] == self.OTHER:
+                error_count = error_count + 1
                 print(str(idx +
                           1) +
                       ") \x1b[31mfailure to run test:\x1b[0m %s (\x1b[34m%s\x1b[0m)" %
                       (error[2], error[4]))
             elif error[0] == self.NOT_FOUND:
+                error_count = error_count + 1
                 print(str(idx + 1) + ") Generating reference image: '%s'" %
                       error[2])
                 continue
+            elif self.only_errors:
+                continue
             elif error[0] == self.DIFF:
+                error_count = error_count + 1
                 print(
                     str(
                         idx +
@@ -282,7 +290,7 @@ class Reporting:
                         expected_new, vdir), diff)
             html_out.write(html_template.replace('{{RESULTS}}', html_body))
             print('View failures by opening %s' % failures_realpath)
-        return 1
+        return error_count
 
 
 def render(filename, config, scale_factor, reporting):
@@ -296,7 +304,8 @@ def render(filename, config, scale_factor, reporting):
             return
     except Exception as e:
         if 'Could not create datasource' in str(e) \
-           or 'Bad connection' in str(e):
+           or 'Bad connection' in str(e) \
+           or 'Postgis Plugin: could not connect to server' in str(e):
             return m
         reporting.other_error(filename, repr(e))
         return m
@@ -305,6 +314,10 @@ def render(filename, config, scale_factor, reporting):
     if 'sizes' in m.parameters:
         sizes = [[int(i) for i in size.split(',')]
                  for size in m.parameters['sizes'].split(';')]
+
+    ignored_renderers = config['ignored_renderers']
+    if 'ignored_renderers' in m.parameters:
+        ignored_renderers = m.parameters['ignored_renderers'].split(',')
 
     for size in sizes:
         m.width, m.height = size
@@ -318,6 +331,8 @@ def render(filename, config, scale_factor, reporting):
         name = filename[0:-4]
         postfix = "%s-%d-%d-%s" % (name, m.width, m.height, scale_factor)
         for renderer in renderers:
+            if renderer['name'] in ignored_renderers:
+                continue
             if config.get(renderer['name'], True):
                 expected = os.path.join(dirname, renderer['dir'], '%s-%s-reference.%s' %
                                         (postfix, renderer['name'], renderer['filetype']))
@@ -340,17 +355,21 @@ def render(filename, config, scale_factor, reporting):
     return m
 
 if __name__ == "__main__":
+    quiet = False
     if '-q' in sys.argv:
         quiet = True
         sys.argv.remove('-q')
-    else:
-        quiet = False
 
+    # Report only errors, ignore diffs
+    only_errors = False
+    if '--only-errors' in sys.argv:
+        only_errors = True
+        sys.argv.remove('--only-errors')
+
+    overwrite_failures = False
     if '--overwrite' in sys.argv:
         overwrite_failures = True
         sys.argv.remove('--overwrite')
-    else:
-        overwrite_failures = False
 
     files = None
     if len(sys.argv) > 1:
@@ -365,7 +384,7 @@ if __name__ == "__main__":
     if not os.path.exists(visual_output_dir):
         os.makedirs(visual_output_dir)
 
-    reporting = Reporting(quiet, overwrite_failures)
+    reporting = Reporting(quiet, overwrite_failures, only_errors)
     try:
         for filename in files:
             config = dict(defaults)
