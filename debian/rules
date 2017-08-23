@@ -31,9 +31,6 @@ override_dh_clean:
 override_dh_auto_clean:
 	# Skip
 
-override_dh_auto_test:
-	dh_auto_test || echo "Ignoring test failures"
-
 override_dh_install:
 	dh_install --list-missing
 
