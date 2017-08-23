@@ -236,12 +236,12 @@ class Reporting:
                           1) +
                       ") \x1b[31mfailure to run test:\x1b[0m %s (\x1b[34m%s\x1b[0m)" %
                       (error[2], error[4]))
+            elif self.only_errors:
+                continue
             elif error[0] == self.NOT_FOUND:
                 error_count = error_count + 1
                 print(str(idx + 1) + ") Generating reference image: '%s'" %
                       error[2])
-                continue
-            elif self.only_errors:
                 continue
             elif error[0] == self.DIFF:
                 error_count = error_count + 1
