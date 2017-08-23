@@ -103,11 +103,11 @@ void export_mvt()
          arg("offset_y") = 0,
          // Filter features by rule conditions in styles.
          arg("style_level_filter") = false,
-         // Positive value in input projection will turn on
+         // Positive value in the units of vector tile coordinates will turn on
          // douglas-peucker with given simplification distance.
          arg("simplify_distance") = 0.0,
          // Skip polygons with area below this threshold,
-         // in input projection.
+         // in vector tile coordinates units.
          arg("area_threshold") = 0.1,
          // Process all rings even exterior ring is degenerated
          // or smaller than area_threshold.
