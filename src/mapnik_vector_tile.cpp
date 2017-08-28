@@ -36,7 +36,7 @@
 #define BOOST_PYTHON_MAX_ARITY 20
 #include <boost/python.hpp>
 
-std::string create_mvt_merc(
+boost::python::object create_mvt_merc(
     mapnik::Map const& map,
     std::uint64_t x,
     std::uint64_t y,
@@ -54,8 +54,7 @@ std::string create_mvt_merc(
     mapnik::vector_tile_impl::polygon_fill_type fill_type,
     std::string const& image_format,
     mapnik::scaling_method_e scaling_method,
-    std::launch threading_mode
-    )
+    std::launch threading_mode)
 {
     mapnik::vector_tile_impl::processor proc(map);
 
@@ -71,9 +70,14 @@ std::string create_mvt_merc(
     mapnik::vector_tile_impl::merc_tile tile(proc.create_tile(
         x, y, z, tile_size, buffer_size, scale_denom,
         offset_x, offset_y, style_level_filter));
-    return tile.get_buffer();
+
+    std::string const& buffer = tile.get_buffer();
+    return boost::python::object(boost::python::handle<>(
+        PyBytes_FromStringAndSize(buffer.data(), buffer.size())));
 }
 
+// TODO: Operate on bytes for compatibility with Python 3.
+// TODO: Tests.
 std::string compress_mvt(std::string const & input)
 {
     std::string output;
