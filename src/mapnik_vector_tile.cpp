@@ -26,6 +26,13 @@
 #include <mapbox/mapnik-vector-tile/vector_tile_processor.hpp>
 #include <mapbox/mapnik-vector-tile/vector_tile_compression.hpp>
 
+// libprotobuf
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wsign-conversion"
+#include "vector_tile.pb.h"
+#pragma GCC diagnostic pop
+
 #define BOOST_PYTHON_MAX_ARITY 20
 #include <boost/python.hpp>
 
@@ -74,7 +81,36 @@ std::string compress_mvt(std::string const & input)
     return output;
 }
 
-void export_mvt()
+void export_tile()
+{
+    using namespace boost::python;
+    using vector_tile::Tile;
+    using vector_tile::Tile_Layer;
+
+    class_<Tile_Layer>("VectorTileLayer")
+        .def("parse_from_string", &Tile_Layer::ParseFromString,
+             arg("buffer"),
+             "Load data from PBF.")
+        .def("features_size", &Tile_Layer::features_size,
+             "Returns a number of features in the layer.")
+        .def("name", &Tile_Layer::name,
+             return_value_policy<copy_const_reference>())
+        ;
+
+    class_<Tile>("VectorTile")
+        .def("parse_from_string", &Tile::ParseFromString,
+             arg("buffer"),
+             "Load data from PBF.")
+        .def("layers", static_cast<Tile_Layer const& (Tile::*)(int) const>(&Tile::layers),
+             arg("index"),
+             return_internal_reference<>(),
+             "Returns a layer by its index.")
+        .def("layers_size", &Tile::layers_size,
+             "Returns a number of layers.")
+        ;
+}
+
+void export_create_mvt()
 {
     using namespace boost::python;
 
@@ -128,3 +164,10 @@ void export_mvt()
     def("compress_mvt", &compress_mvt,
         "gzip compression");
 }
+
+void export_mvt()
+{
+    export_create_mvt();
+    export_tile();
+}
+

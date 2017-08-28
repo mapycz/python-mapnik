@@ -92,6 +92,7 @@ lib_path = os.path.join(check_output([mapnik_config, '--prefix']),'lib')
 linkflags.extend(check_output([mapnik_config, '--libs']).split(' '))
 linkflags.extend(check_output([mapnik_config, '--ldflags']).split(' '))
 linkflags.extend([ '-lmapnik-wkt', '-lmapnik-json'])
+linkflags.append('-lprotobuf-lite')
 
 # Dynamically make the mapnik/paths.py file if it doesn't exist.
 if os.path.isfile('mapnik/paths.py'):
@@ -199,6 +200,7 @@ if mason_build:
             pass
 
 extra_comp_args = check_output([mapnik_config, '--cflags']).split(' ')
+extra_comp_args.append('-I/usr/src/mapbox/mapnik-vector-tile')
 
 if os.environ.get("PYCAIRO", "false") == "true":
     try:
@@ -306,6 +308,7 @@ setup(
             'src/mapnik_view_transform.cpp',
             'src/python_grid_utils.cpp',
             'src/mapnik_vector_tile.cpp',
+            '/usr/src/mapbox/mapnik-vector-tile/vector_tile.pb.cc',
         ],
             language='c++',
             extra_compile_args=extra_comp_args,
