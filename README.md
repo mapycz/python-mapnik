@@ -1,5 +1,5 @@
 
-Python bindings for Mapnik.
+# Python bindings for Mapnik.
 
 ## Installation
 
