@@ -56,7 +56,8 @@ def render_grid(m, output, scale_factor):
     grid = mapnik.Grid(m.width, m.height)
     mapnik.render_layer(m, grid, layer=0, scale_factor=scale_factor)
     utf1 = grid.encode('utf', resolution=4)
-    open(output, 'wb').write(json.dumps(utf1, indent=1).encode())
+    with open(output, 'wb') as f:
+        f.write(json.dumps(utf1, indent=1).encode())
 
 
 def render_agg(m, output, scale_factor):
@@ -105,8 +106,10 @@ def compare(actual, expected, alpha=True):
 def compare_grids(actual, expected, threshold=0, alpha=True):
     global errors
     global passed
-    im1 = json.loads(open(actual).read())
-    im2 = json.loads(open(expected).read())
+    with open(actual) as f:
+        im1 = json.loads(f.read())
+    with open(expected) as f:
+        im2 = json.loads(f.read())
     # TODO - real diffing
     if not im1['data'] == im2['data']:
         return 99999999
@@ -164,8 +167,10 @@ class Reporting:
 
         if self.overwrite_failures:
             self.errors.append((self.REPLACE, actual, expected, diff, None))
-            contents = open(actual, 'r').read()
-            open(expected, 'wb').write(contents)
+            with open(actual, 'r') as f:
+                contents = f.read()
+            with open(expected, 'wb') as f:
+                f.write(contents)
         else:
             self.errors.append((self.DIFF, actual, expected, diff, None))
 
@@ -190,8 +195,10 @@ class Reporting:
         else:
             print(
                 '\x1b[33m?\x1b[0m (\x1b[34mReference file not found, creating\x1b[0m)')
-        contents = open(actual, 'r').read()
-        open(expected, 'wb').write(contents)
+        with open(actual, 'r') as f:
+            contents = f.read()
+        with open(expected, 'wb') as f:
+            f.write(contents)
 
     def other_error(self, expected, message):
         self.failed += 1
@@ -265,30 +272,27 @@ class Reporting:
             vdir = os.path.join(visual_output_dir, 'visual-test-results')
             if not os.path.exists(vdir):
                 os.makedirs(vdir)
-            html_template = open(
-                os.path.join(
-                    data_dir,
-                    'index.html'),
-                'r').read()
+            with open(os.path.join(data_dir, 'index.html'), 'r') as f:
+                html_template = f.read()
             name = 'index.html'
             failures_realpath = os.path.join(vdir, name)
-            html_out = open(failures_realpath, 'w+')
-            sortable_errors.sort(reverse=True)
-            html_body = ''
-            for item in sortable_errors:
-                # copy images into single directory
-                actual = item[1][1]
-                expected = item[1][2]
-                diff = item[0]
-                actual_new = os.path.join(vdir, os.path.basename(actual))
-                shutil.copy(actual, actual_new)
-                expected_new = os.path.join(vdir, os.path.basename(expected))
-                shutil.copy(expected, expected_new)
-                html_body += self.make_html_item(
-                    os.path.relpath(
-                        actual_new, vdir), os.path.relpath(
-                        expected_new, vdir), diff)
-            html_out.write(html_template.replace('{{RESULTS}}', html_body))
+            with open(failures_realpath, 'w+') as html_out:
+                sortable_errors.sort(reverse=True)
+                html_body = ''
+                for item in sortable_errors:
+                    # copy images into single directory
+                    actual = item[1][1]
+                    expected = item[1][2]
+                    diff = item[0]
+                    actual_new = os.path.join(vdir, os.path.basename(actual))
+                    shutil.copy(actual, actual_new)
+                    expected_new = os.path.join(vdir, os.path.basename(expected))
+                    shutil.copy(expected, expected_new)
+                    html_body += self.make_html_item(
+                        os.path.relpath(
+                            actual_new, vdir), os.path.relpath(
+                            expected_new, vdir), diff)
+                html_out.write(html_template.replace('{{RESULTS}}', html_body))
             print('View failures by opening %s' % failures_realpath)
         return error_count
 
