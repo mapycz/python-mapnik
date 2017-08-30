@@ -76,13 +76,20 @@ boost::python::object create_mvt_merc(
         PyBytes_FromStringAndSize(buffer.data(), buffer.size())));
 }
 
-// TODO: Operate on bytes for compatibility with Python 3.
-// TODO: Tests.
-std::string compress_mvt(std::string const & input)
+boost::python::object compress_mvt(std::string const& input)
 {
     std::string output;
     mapnik::vector_tile_impl::zlib_compress(input, output);
-    return output;
+    return boost::python::object(boost::python::handle<>(
+        PyBytes_FromStringAndSize(output.data(), output.size())));
+}
+
+boost::python::object decompress_mvt(std::string const& input)
+{
+    std::string output;
+    mapnik::vector_tile_impl::zlib_decompress(input, output);
+    return boost::python::object(boost::python::handle<>(
+        PyBytes_FromStringAndSize(output.data(), output.size())));
 }
 
 void export_tile()
@@ -167,6 +174,9 @@ void export_create_mvt()
 
     def("compress_mvt", &compress_mvt,
         "gzip compression");
+
+    def("decompress_mvt", &decompress_mvt,
+        "decompress zlib or gzip compressed data");
 }
 
 void export_mvt()

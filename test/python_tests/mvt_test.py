@@ -117,6 +117,14 @@ def test_create_mvt_merc_filter_by_scale_denom_4():
     eq_(tile.layers(0).name(), "L1")
     eq_(tile.layers(1).name(), "L2")
 
+def test_compress():
+    content = b'test' * 100
+    eq_(len(content), 400)
+    compressed = mapnik.compress_mvt(content)
+    eq_(len(compressed), 29)
+    decompressed = mapnik.decompress_mvt(compressed)
+    eq_(len(decompressed), 400)
+
 if __name__ == "__main__":
     setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
