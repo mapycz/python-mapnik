@@ -199,3 +199,49 @@ struct python_optional<bool> : public mapnik::util::noncopyable
             optional_to_python, optional_from_python>();
     }
 };
+
+// to/from boost::optional<int>
+template <>
+struct python_optional<int> : public mapnik::util::noncopyable
+{
+    struct optional_to_python
+    {
+        static PyObject * convert(const boost::optional<int>& value)
+        {
+            return (value ? PyInt_FromLong(*value) :
+                    boost::python::detail::none());
+        }
+    };
+
+    struct optional_from_python
+    {
+        static void * convertible(PyObject * source)
+        {
+            using namespace boost::python::converter;
+
+            if (source == Py_None || PyInt_Check(source))
+                return source;
+            return 0;
+        }
+
+        static void construct(PyObject * source,
+                              boost::python::converter::rvalue_from_python_stage1_data * data)
+        {
+            using namespace boost::python::converter;
+            void * const storage = ((rvalue_from_python_storage<boost::optional<int> > *)
+                                    data)->storage.bytes;
+            if (source == Py_None)  // == None
+                new (storage) boost::optional<int>(); // A Boost uninitialized value
+            else
+                new (storage) boost::optional<int>(boost::python::extract<int>(source));
+            data->convertible = storage;
+        }
+    };
+
+    explicit python_optional()
+    {
+        register_python_conversion<boost::optional<int>,
+            optional_to_python, optional_from_python>();
+    }
+};
+

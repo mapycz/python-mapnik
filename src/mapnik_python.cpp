@@ -773,7 +773,6 @@ BOOST_PYTHON_MODULE(_mapnik)
     export_label_collision_detector();
     export_logger();
     export_label_placement();
-    export_mvt();
 
     def("clear_cache", &clear_cache,
         "\n"
@@ -1085,4 +1084,6 @@ BOOST_PYTHON_MODULE(_mapnik)
     to_python_converter<mapnik::value_holder,mapnik_param_to_python>();
     to_python_converter<mapnik::value,mapnik_value_to_python>();
     to_python_converter<mapnik::enumeration_wrapper,mapnik_enumeration_wrapper_to_python>();
+
+    export_mvt();
 }

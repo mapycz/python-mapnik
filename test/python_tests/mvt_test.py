@@ -125,6 +125,44 @@ def test_compress():
     decompressed = mapnik.decompress_mvt(compressed)
     eq_(len(decompressed), 400)
 
+def test_buffer_size_from_style():
+    m = mapnik.Map(256, 256)
+    mapnik.load_map(m, 'styles/map_buffer_size.xml')
+    mvt_buffer = mapnik.create_mvt_merc(
+        m, 2048, 2047, 12,
+        buffer_size=None);
+
+    tile = mapnik.VectorTile()
+    tile.parse_from_string(mvt_buffer);
+
+    eq_(tile.layers_size(), 1);
+    eq_(tile.layers(0).features_size(), 2)
+
+def test_buffer_size_from_style_by_default():
+    m = mapnik.Map(256, 256)
+    mapnik.load_map(m, 'styles/map_buffer_size.xml')
+    mvt_buffer = mapnik.create_mvt_merc(
+        m, 2048, 2047, 12);
+
+    tile = mapnik.VectorTile()
+    tile.parse_from_string(mvt_buffer);
+
+    eq_(tile.layers_size(), 1);
+    eq_(tile.layers(0).features_size(), 2)
+
+def test_buffer_size_from_style_overriden_by_parameter():
+    m = mapnik.Map(256, 256)
+    mapnik.load_map(m, 'styles/map_buffer_size.xml')
+    mvt_buffer = mapnik.create_mvt_merc(
+        m, 2048, 2047, 12,
+        buffer_size=0);
+
+    tile = mapnik.VectorTile()
+    tile.parse_from_string(mvt_buffer);
+
+    eq_(tile.layers_size(), 1);
+    eq_(tile.layers(0).features_size(), 1)
+
 if __name__ == "__main__":
     setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
