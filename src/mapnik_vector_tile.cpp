@@ -144,6 +144,7 @@ void export_create_mvt()
          arg("y"),
          arg("z"),
          arg("tile_size") = 4096,
+         // If None, buffer size is taken from the Map.
          arg("buffer_size") = boost::optional<std::int32_t>(),
          arg("scale_denom") = 0.0,
          arg("offset_x") = 0,
