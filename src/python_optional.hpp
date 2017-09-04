@@ -208,8 +208,13 @@ struct python_optional<int> : public mapnik::util::noncopyable
     {
         static PyObject * convert(const boost::optional<int>& value)
         {
-            return (value ? PyInt_FromLong(*value) :
-                    boost::python::detail::none());
+            return (value ?
+#if PY_MAJOR_VERSION > 2
+                        PyLong_FromLong(*value)
+#else
+                        PyInt_FromLong(*value)
+#endif
+                    : boost::python::detail::none());
         }
     };
 
@@ -219,7 +224,13 @@ struct python_optional<int> : public mapnik::util::noncopyable
         {
             using namespace boost::python::converter;
 
-            if (source == Py_None || PyInt_Check(source))
+            if (source == Py_None
+#if PY_MAJOR_VERSION > 2
+                || PyLong_Check(source)
+#else
+                || PyInt_Check(source)
+#endif
+                )
                 return source;
             return 0;
         }
