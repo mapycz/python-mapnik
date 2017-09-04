@@ -1,3 +1,18 @@
+szn-python-mapnik (3:3.8.1) Seznam; urgency=medium
+
+  * tests overhaul - all tests should pass now
+  * df31e38 clarify buffer_size param
+  * 59d3c8d buffer_size as boost::optional needs more recent mapnik-vector-tile
+  * 9abfdf9 create_mvt_merc: support None value in buffer_size parameter
+  * 506af02 mvt compression improvements
+  * 3c59738 mvt: operate with bytes in order to avoid unicode decoding in Python 3
+  * f119c2d mvt: new wrappers for Tile and Tile_Layer classes, tests
+  * 69dab55 debianization: install dejavu font for testing
+  * a0a7f9d debianization: allow tests to fail build
+  * 1bd3c45 mvt: expose more parameters
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Mon, 04 Sep 2017 12:21:52 +0000
+
 szn-python-mapnik (3:3.8.0) Seznam; urgency=medium
 
   * szn-mapnik 3.8.0
