@@ -1,3 +1,10 @@
+szn-python-mapnik (3:3.8.4-1~stats-1) Seznam; urgency=medium
+
+  * symbols from statically linked stdlibc++ made hidden
+  * used compatible C++ ABI with GCC 4.9 from jessie
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Mon, 23 Oct 2017 11:51:42 +0200
+
 szn-python-mapnik (3:3.8.4~stats-1) Seznam; urgency=medium
 
   * szn-mapnik 3.8.4~stats-1
