@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.8.5~stats-1) Seznam; urgency=medium
+
+  * szn-mapnik 3.8.5~stats-1
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Mon, 23 Oct 2017 12:41:05 +0200
+
 szn-python-mapnik (3:3.8.4-1~stats-1) Seznam; urgency=medium
 
   * symbols from statically linked stdlibc++ made hidden

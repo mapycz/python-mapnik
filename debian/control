@@ -6,7 +6,7 @@ Priority: optional
 Build-Depends: debhelper (>= 9),
                dh-python,
                libboost-python1.55-dev,
-               szn-libmapnik-dev (= 3:3.8.4-1~stats-1),
+               szn-libmapnik-dev (= 3:3.8.5~stats-1),
                python-all-dev,
                python-setuptools,
                python-cairo,
@@ -26,7 +26,7 @@ X-Python-Version: >= 2.7
 Package: szn-python-mapnik
 Architecture: any
 Depends: python-cairo,
-         szn-libmapnik (= 3:3.8.4-1~stats-1),
+         szn-libmapnik (= 3:3.8.5~stats-1),
          ${python:Depends},
          ${shlibs:Depends},
          ${misc:Depends}
@@ -46,7 +46,7 @@ Description: Python 2 interface to the mapnik library
 Package: szn-python3-mapnik
 Architecture: any
 Depends: python3-cairo,
-         szn-libmapnik (= 3:3.8.4-1~stats-1),
+         szn-libmapnik (= 3:3.8.5~stats-1),
          ${python3:Depends},
          ${shlibs:Depends},
          ${misc:Depends}
