@@ -51,7 +51,7 @@ struct layer_pickle_suite : boost::python::pickle_suite
     getstate(const layer& l)
     {
         boost::python::list s;
-        std::vector<std::string> const& style_names = l.styles();
+        std::deque<std::string> const& style_names = l.styles();
         for (unsigned i = 0; i < style_names.size(); ++i)
         {
             s.append(style_names[i]);
@@ -93,7 +93,7 @@ struct layer_pickle_suite : boost::python::pickle_suite
     }
 };
 
-std::vector<std::string> & (mapnik::layer::*_styles_)() = &mapnik::layer::styles;
+std::deque<std::string> & (mapnik::layer::*_styles_)() = &mapnik::layer::styles;
 
 void set_maximum_extent(mapnik::layer & l, boost::optional<mapnik::box2d<double> > const& box)
 {
@@ -139,6 +139,9 @@ PyObject * get_buffer_size(mapnik::layer & l)
 void export_layer()
 {
     using namespace boost::python;
+    class_<std::deque<std::string> >("StyleNames")
+        .def(vector_indexing_suite<std::deque<std::string>,true >())
+        ;
     class_<std::vector<std::string> >("Names")
         .def(vector_indexing_suite<std::vector<std::string>,true >())
         ;

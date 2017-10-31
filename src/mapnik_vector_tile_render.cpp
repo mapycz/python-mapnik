@@ -83,7 +83,7 @@ template <typename Renderer>
 void process_layers(Renderer & ren,
                     mapnik::request const& m_req,
                     mapnik::projection const& map_proj,
-                    std::vector<mapnik::layer> const& layers,
+                    std::deque<mapnik::layer> const& layers,
                     double scale_denom,
                     std::string const& map_srs,
                     mapnik::vector_tile_impl::merc_tile const& tile)
@@ -150,7 +150,7 @@ void render_mvt_merc(mapnik::vector_tile_impl::merc_tile const& mvt,
     }
     scale_denom *= scale_factor;
 
-    std::vector<mapnik::layer> const& layers = map.layers();
+    std::deque<mapnik::layer> const& layers = map.layers();
     mapnik::attributes vars = mapnik::dict2attr(vars_dict);
 
     if (image.is<mapnik::image_rgba8>())
