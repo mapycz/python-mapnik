@@ -46,8 +46,8 @@ using mapnik::box2d;
 using mapnik::layer;
 using mapnik::Map;
 
-std::vector<layer>& (Map::*layers_nonconst)() =  &Map::layers;
-std::vector<layer> const& (Map::*layers_const)() const =  &Map::layers;
+std::deque<layer>& (Map::*layers_nonconst)() =  &Map::layers;
+std::deque<layer> const& (Map::*layers_const)() const =  &Map::layers;
 mapnik::parameters& (Map::*params_nonconst)() =  &Map::get_extra_parameters;
 
 void insert_style(mapnik::Map & m, std::string const& name, mapnik::feature_type_style const& style)
@@ -152,8 +152,8 @@ void export_map()
         .value("RESPECT", mapnik::Map::RESPECT)
         ;
 
-    class_<std::vector<layer> >("Layers")
-        .def(vector_indexing_suite<std::vector<layer> >())
+    class_<std::deque<layer> >("Layers")
+        .def(vector_indexing_suite<std::deque<layer> >())
         ;
 
     class_<style_range>("StyleRange")

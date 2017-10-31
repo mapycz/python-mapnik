@@ -286,7 +286,7 @@ void render_layer_for_grid(mapnik::Map const& map,
                                   unsigned offset_x,
                                   unsigned offset_y)
 {
-    std::vector<mapnik::layer> const& layers = map.layers();
+    std::deque<mapnik::layer> const& layers = map.layers();
     std::size_t layer_num = layers.size();
     if (layer_idx >= layer_num) {
         std::ostringstream s;
