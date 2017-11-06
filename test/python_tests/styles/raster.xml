@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Map srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over" background-color="steelblue">
+
+    <Style name="hypsometry">
+        <Rule>
+            <RasterSymbolizer>
+                <RasterColorizer default-mode="linear" default-color="#c5daa2" epsilon="0.001">
+                    <stop value = "0" color="#c5daa2" />
+                    <stop value = "100" color="#c5daa2"  />
+                    <stop value = "200" color="#ccdfaf"  />
+                    <stop value = "250" color="#d5e3b5"  />
+                    <stop value = "300" color="#e5eac3"  />
+                    <stop value = "350" color="#ebf0cb"  />
+                    <stop value = "400" color="#eef6d2"  />
+                    <stop value = "450" color="#EBECC3"  />
+                    <stop value = "550" color="#E7E3B7"  />
+                    <stop value = "750" color="#E5DDAF"  />
+                    <stop value = "900" color="#E3D7A8"  />
+                    <stop value = "1100" color="#E0D1A3"  />
+                    <stop value = "1600" color="#DAC39B"  />
+                    <stop value = "1850" color="#DABC90"  />
+                    <stop value = "2100" color="#D5B085"  />
+                    <stop value = "2400" color="#D0AA82"  />
+                    <stop value = "2700" color="#C4A27F"  />
+                    <stop value = "3000" color="#BA9B7C"  />
+                    <stop value = "3300" color="#B19476"  />
+                    <stop value = "3600" color="#A98D6F"  />
+                    <stop value = "4500" color="#A58769"  />
+                    <stop value = "5500" color="#7D5D3B"  />
+                    <stop value = "7000" color="#141414"  />
+                    <stop value = "7500" color="#050505"  />
+                    <stop value = "8000" color="#FFFFFF"  />
+                </RasterColorizer>
+            </RasterSymbolizer>
+        </Rule>
+    </Style>
+
+	<Layer name="hypsometry" srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over">
+		<StyleName>hypsometry</StyleName>
+		<Datasource>
+			<Parameter name="file">../../data/raster/hypsometry-western-bohemia.tiff</Parameter>
+			<Parameter name="type">gdal</Parameter>
+			<Parameter name="band">1</Parameter>
+		</Datasource>
+	</Layer>
+
+
+
+</Map>

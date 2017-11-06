@@ -22,16 +22,12 @@
 
 #include <mapnik/config.hpp>
 
-#include <mapbox/mapnik-vector-tile/vector_tile_merc_tile.hpp>
 #include <mapbox/mapnik-vector-tile/vector_tile_processor.hpp>
 #include <mapbox/mapnik-vector-tile/vector_tile_compression.hpp>
-
-// libprotobuf
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wunused-parameter"
-#pragma GCC diagnostic ignored "-Wsign-conversion"
-#include "vector_tile.pb.h"
-#pragma GCC diagnostic pop
+#include <mapbox/mapnik-vector-tile/vector_tile_load_tile.hpp>
+#include <mapbox/mapnik-vector-tile/vector_tile_datasource_pbf.hpp>
+#include <mapbox/mapnik-vector-tile/vector_tile_tile.hpp>
+#include <mapbox/mapnik-vector-tile/vector_tile_merc_tile.hpp>
 
 #define BOOST_PYTHON_MAX_ARITY 20
 #include <boost/python.hpp>
@@ -92,36 +88,7 @@ boost::python::object decompress_mvt(std::string const& input)
         PyBytes_FromStringAndSize(output.data(), output.size())));
 }
 
-void export_tile()
-{
-    using namespace boost::python;
-    using vector_tile::Tile;
-    using vector_tile::Tile_Layer;
-
-    class_<Tile_Layer>("VectorTileLayer")
-        .def("parse_from_string", &Tile_Layer::ParseFromString,
-             arg("buffer"),
-             "Load data from PBF.")
-        .def("features_size", &Tile_Layer::features_size,
-             "Returns a number of features in the layer.")
-        .def("name", &Tile_Layer::name,
-             return_value_policy<copy_const_reference>())
-        ;
-
-    class_<Tile>("VectorTile")
-        .def("parse_from_string", &Tile::ParseFromString,
-             arg("buffer"),
-             "Load data from PBF.")
-        .def("layers", static_cast<Tile_Layer const& (Tile::*)(int) const>(&Tile::layers),
-             arg("index"),
-             return_internal_reference<>(),
-             "Returns a layer by its index.")
-        .def("layers_size", &Tile::layers_size,
-             "Returns a number of layers.")
-        ;
-}
-
-void export_create_mvt()
+void export_mvt_create()
 {
     using namespace boost::python;
 
@@ -165,7 +132,7 @@ void export_create_mvt()
          // Polygon fill strategy used during clipping.
          arg("fill_type") = fill_type::positive_fill,
          // Raster image format.
-         arg("image_format") = std::string("webp"),
+         arg("image_format") = std::string("tiff"),
          // Raster scaling method.
          arg("scaling_method") = mapnik::SCALING_BILINEAR,
          // Allows parallel processing of layers.
@@ -180,9 +147,92 @@ void export_create_mvt()
         "decompress zlib or gzip compressed data");
 }
 
+void merge_compressed_buffer(mapnik::vector_tile_impl::merc_tile & tile,
+                             std::string const& buf)
+{
+    merge_from_compressed_buffer(tile, buf.data(), buf.size());
+}
+
+void add_image_layer(mapnik::vector_tile_impl::merc_tile & tile,
+                     std::string const& layer_name,
+                     std::string const& image_buffer)
+{
+    add_image_buffer_as_tile_layer(tile,
+                                   layer_name,
+                                   image_buffer.data(),
+                                   image_buffer.size());
+}
+
+boost::python::object mvt_get_buffer(mapnik::vector_tile_impl::tile const& tile)
+{
+    std::string const& buf = tile.get_buffer();
+    return boost::python::object(boost::python::handle<>(
+        PyBytes_FromStringAndSize(buf.data(), buf.size())));
+}
+
+extern void export_mvt_render();
+extern void export_mvt_info();
+
 void export_mvt()
 {
-    export_create_mvt();
-    export_tile();
+    using namespace boost::python;
+    using mapnik::vector_tile_impl::tile;
+    using mapnik::vector_tile_impl::merc_tile;
+    using tile_size_get = std::uint32_t (tile::*)() const;
+    using tile_size_set = void (tile::*)(std::uint32_t);
+    using buffer_size_get = std::int32_t (tile::*)() const;
+    using buffer_size_set = void (tile::*)(std::int32_t);
+    using xyz_get = std::uint64_t (merc_tile::*)() const;
+    using xyz_set = void (merc_tile::*)(std::uint64_t);
+
+    class_<tile>("VectorTile",
+        "Represents a MVT",
+        init<mapnik::box2d<double> const&,
+            std::uint32_t, std::int32_t>(
+            (arg("extent"),
+             arg("tile_size") = 4096,
+             arg("buffer_size") = 128)
+        ))
+        .add_property("tile_size",
+                      static_cast<tile_size_get>(&merc_tile::tile_size),
+                      static_cast<tile_size_set>(&merc_tile::tile_size))
+        .add_property("buffer_size",
+                      static_cast<buffer_size_get>(&merc_tile::buffer_size),
+                      static_cast<buffer_size_set>(&merc_tile::buffer_size))
+        .add_property("is_empty", &merc_tile::is_empty)
+        .add_property("is_painted", &merc_tile::is_painted)
+        .add_property("extent", make_function(&merc_tile::extent,
+            return_value_policy<copy_const_reference>()))
+        .def("get_buffer", mvt_get_buffer)
+        ;
+
+    class_<merc_tile, bases<tile>>("VectorTileMerc",
+        "A specialization of MVT for Mercator",
+        init<std::uint64_t, std::uint64_t, std::uint64_t,
+            std::uint32_t, std::int32_t>(
+            (arg("x"), arg("y"), arg("z"),
+            arg("tile_size") = 4096,
+            arg("buffer_size") = 128)
+        ))
+        .add_property("x",
+                      static_cast<xyz_get>(&merc_tile::x),
+                      static_cast<xyz_set>(&merc_tile::x))
+        .add_property("y",
+                      static_cast<xyz_get>(&merc_tile::y),
+                      static_cast<xyz_set>(&merc_tile::y))
+        .add_property("z",
+                      static_cast<xyz_get>(&merc_tile::z),
+                      static_cast<xyz_set>(&merc_tile::z))
+        ;
+
+    def("merge_compressed_buffer", &merge_compressed_buffer,
+        "Merge MVT buffer with given tile. The buffer can be compressed.");
+
+    def("add_image_layer", &add_image_layer,
+        "Creates new layer with bitmap image content.");
+
+    export_mvt_create();
+    export_mvt_info();
+    export_mvt_render();
 }
 

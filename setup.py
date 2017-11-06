@@ -25,10 +25,7 @@ def check_output(args, shell=False):
     return output.rstrip('\n')
 
 def boost_suffixes():
-    suffixes = [
-        "",  # standard naming
-        "-mt"  # former naming schema for multithreading build
-    ]
+    suffixes = []
 
     # boost-python
 
@@ -39,6 +36,14 @@ def boost_suffixes():
     suffixes.append(sys.version_info.major)
     # Gentoo
     suffixes.append("-{}.{}".format(sys.version_info.major, sys.version_info.minor))
+
+    # Other
+
+    suffixes.extend([
+        "",  # standard naming
+        "-mt"  # former naming schema for multithreading build
+    ])
+
     return suffixes
 
 def find_boost_library(_id):
@@ -363,6 +368,8 @@ setup(
             'src/mapnik_view_transform.cpp',
             'src/python_grid_utils.cpp',
             'src/mapnik_vector_tile.cpp',
+            'src/mapnik_vector_tile_render.cpp',
+            'src/mapnik_vector_tile_info.cpp',
             '/usr/src/mapbox/mapnik-vector-tile/vector_tile.pb.cc',
         ],
             language='c++',

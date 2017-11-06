@@ -256,3 +256,53 @@ struct python_optional<int> : public mapnik::util::noncopyable
     }
 };
 
+// to/from boost::optional<unsigned long>
+template <>
+struct python_optional<unsigned long> : public mapnik::util::noncopyable
+{
+    struct optional_to_python
+    {
+        static PyObject * convert(const boost::optional<unsigned long>& value)
+        {
+            return (value ?  PyLong_FromLong(*value) : boost::python::detail::none());
+        }
+    };
+
+    struct optional_from_python
+    {
+        static void * convertible(PyObject * source)
+        {
+            using namespace boost::python::converter;
+
+            if (source == Py_None
+#if PY_MAJOR_VERSION > 2
+                || PyLong_Check(source)
+#else
+                || PyInt_Check(source)
+#endif
+                )
+                return source;
+            return 0;
+        }
+
+        static void construct(PyObject * source,
+                              boost::python::converter::rvalue_from_python_stage1_data * data)
+        {
+            using namespace boost::python::converter;
+            void * const storage = ((rvalue_from_python_storage<boost::optional<unsigned long> > *)
+                                    data)->storage.bytes;
+            if (source == Py_None)  // == None
+                new (storage) boost::optional<unsigned long>(); // A Boost uninitialized value
+            else
+                new (storage) boost::optional<unsigned long>(boost::python::extract<unsigned long>(source));
+            data->convertible = storage;
+        }
+    };
+
+    explicit python_optional()
+    {
+        register_python_conversion<boost::optional<unsigned long>,
+            optional_to_python, optional_from_python>();
+    }
+};
+

@@ -139,3 +139,10 @@ def assert_box2d_almost_equal(a, b, msg=None):
     assert_almost_equal(a.maxx, b.maxx, msg=msg)
     assert_almost_equal(a.miny, b.miny, msg=msg)
     assert_almost_equal(a.maxy, b.maxy, msg=msg)
+
+
+def compare_file_size(file1, file2, max_diff):
+    size1 = os.path.getsize(file1);
+    size2 = os.path.getsize(file2);
+    return abs(size1 - size2) < max_diff
+
