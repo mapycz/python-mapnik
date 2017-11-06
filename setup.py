@@ -23,8 +23,48 @@ def check_output(args, shell=False):
         output = output.decode()
     return output.rstrip('\n')
 
+def find_boost_library(_id):
+    suffixes = [
+        "",  # standard naming
+        "-mt"  # former naming schema for multithreading build
+    ]
+    if "python" in _id:
+        # Debian naming convention for versions installed in parallel
+        suffixes.append("-py%d%d" % (sys.version_info.major,
+                                     sys.version_info.minor))
+        # standard suffix for Python3
+        suffixes.append(sys.version_info.major)
+        # Gentoo
+        suffixes.append("-{}.{}".format(sys.version_info.major, sys.version_info.minor))
+    for suf in suffixes:
+        name = "%s%s" % (_id, suf)
+        lib = find_library(name)
+        if lib is not None:
+            return name
 
-def get_boost_library_paths():
+def get_boost_library_names():
+    wanted = ['boost_python', 'boost_thread', 'boost_system']
+    found = []
+    missing = []
+    for _id in wanted:
+        name = os.environ.get("%s_LIB" % _id.upper(), find_boost_library(_id))
+        if name:
+            found.append(name)
+        else:
+            missing.append(_id)
+    if missing:
+        msg = ""
+        for name in missing:
+            msg += ("\nMissing {} boost library, try to add its name with "
+                    "{}_LIB environment var.").format(name, name.upper())
+        raise EnvironmentError(msg)
+    return found
+
+
+def get_boost_library_static_paths():
+    """
+    Paths for static linking
+    """
     paths = []
 
     boost_path = os.environ.get("BOOST_LIBS")
@@ -36,7 +76,7 @@ def get_boost_library_paths():
     if not boost_path:
         raise Exception("Failed to find boost libs")
 
-    python_lib = 'python-py{}{}'.format(
+    python_lib = 'python-{}.{}'.format(
         sys.version_info.major, sys.version_info.minor)
     for name in [python_lib, 'thread', 'system']:
         paths.append(os.path.join(boost_path,
@@ -56,7 +96,10 @@ class WhichBoostCommand(Command):
         pass
 
     def run(self):
-        print("\n".join(get_boost_library_paths()))
+        print("Static Boost libs:")
+        print("\n".join(get_boost_library_static_paths()))
+        print("Dynamic Boost libs:")
+        print("\n".join(get_boost_library_names()))
 
 
 cflags = sysconfig.get_config_var('CFLAGS')
@@ -69,8 +112,9 @@ ldshared = sysconfig.get_config_var('LDSHARED')
 sysconfig._config_vars['LDSHARED'] = re.sub(
     ' +', ' ', ldshared.replace('-g ', '').replace('-Os', '').replace('-arch i386', ''))
 ldflags = sysconfig.get_config_var('LDFLAGS')
-sysconfig._config_vars['LDFLAGS'] = re.sub(
-    ' +', ' ', ldflags.replace('-g ', '').replace('-Os', '').replace('-arch i386', ''))
+if ldflags:
+    sysconfig._config_vars['LDFLAGS'] = re.sub(
+        ' +', ' ', ldflags.replace('-g ', '').replace('-Os', '').replace('-arch i386', ''))
 pycflags = sysconfig.get_config_var('PY_CFLAGS')
 sysconfig._config_vars['PY_CFLAGS'] = re.sub(
     ' +', ' ', pycflags.replace('-g ', '').replace('-Os', '').replace('-arch i386', ''))
@@ -313,7 +357,7 @@ setup(
             language='c++',
             extra_compile_args=extra_comp_args,
             extra_link_args=linkflags,
-            extra_objects=get_boost_library_paths()
+            extra_objects=get_boost_library_static_paths()
         )
     ]
 )
