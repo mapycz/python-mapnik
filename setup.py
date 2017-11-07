@@ -14,6 +14,7 @@ from setuptools import Command, Extension, setup
 
 PYTHON3 = sys.version_info.major == 3
 
+NEEDED_BOOST_LIBS = ['python', 'thread', 'system']
 
 # Utils
 def check_output(args, shell=False):
@@ -23,30 +24,35 @@ def check_output(args, shell=False):
         output = output.decode()
     return output.rstrip('\n')
 
-def find_boost_library(_id):
+def boost_suffixes():
     suffixes = [
         "",  # standard naming
         "-mt"  # former naming schema for multithreading build
     ]
-    if "python" in _id:
-        # Debian naming convention for versions installed in parallel
-        suffixes.append("-py%d%d" % (sys.version_info.major,
-                                     sys.version_info.minor))
-        # standard suffix for Python3
-        suffixes.append(sys.version_info.major)
-        # Gentoo
-        suffixes.append("-{}.{}".format(sys.version_info.major, sys.version_info.minor))
-    for suf in suffixes:
+
+    # boost-python
+
+    # Debian naming convention for versions installed in parallel
+    suffixes.append("-py%d%d" % (sys.version_info.major,
+                                 sys.version_info.minor))
+    # standard suffix for Python3
+    suffixes.append(sys.version_info.major)
+    # Gentoo
+    suffixes.append("-{}.{}".format(sys.version_info.major, sys.version_info.minor))
+    return suffixes
+
+def find_boost_library(_id):
+    for suf in boost_suffixes():
         name = "%s%s" % (_id, suf)
         lib = find_library(name)
         if lib is not None:
             return name
 
 def get_boost_library_names():
-    wanted = ['boost_python', 'boost_thread', 'boost_system']
     found = []
     missing = []
-    for _id in wanted:
+    for _id in NEEDED_BOOST_LIBS:
+        _id = 'boost_' + _id
         name = os.environ.get("%s_LIB" % _id.upper(), find_boost_library(_id))
         if name:
             found.append(name)
@@ -76,11 +82,13 @@ def get_boost_library_static_paths():
     if not boost_path:
         raise Exception("Failed to find boost libs")
 
-    python_lib = 'python-{}.{}'.format(
-        sys.version_info.major, sys.version_info.minor)
-    for name in [python_lib, 'thread', 'system']:
-        paths.append(os.path.join(boost_path,
-            'libboost_{}.a'.format(name)))
+    for name in NEEDED_BOOST_LIBS:
+        for suf in boost_suffixes():
+            lib_path = os.path.join(boost_path,
+                'libboost_{}{}.a'.format(name, suf))
+            if os.path.exists(lib_path):
+                paths.append(lib_path)
+                break
 
     return paths
 
@@ -267,12 +275,15 @@ else:
     linkflags.append('-Wl,-z,origin')
     linkflags.append('-Wl,-rpath=$ORIGIN/lib')
 
+static_boost = bool(os.environ.get("STATIC_BOOST", False))
+
+if not static_boost:
+    linkflags.extend(['-l%s' % i for i in get_boost_library_names()])
+
 if os.environ.get("CC", False) == False:
     os.environ["CC"] = check_output([mapnik_config, '--cxx'])
 if os.environ.get("CXX", False) == False:
     os.environ["CXX"] = check_output([mapnik_config, '--cxx'])
-
-jobs = int(os.environ.get("JOBS", 1))
 
 # monkey-patch for parallel compilation
 def parallelCCompile(self, sources, output_dir=None, macros=None, include_dirs=None, debug=0, extra_preargs=None, extra_postargs=None, depends=None):
@@ -290,7 +301,7 @@ def parallelCCompile(self, sources, output_dir=None, macros=None, include_dirs=N
     list(multiprocessing.pool.ThreadPool(N).imap(_single_compile,objects))
     return objects
 
-if jobs > 1:
+if int(os.environ.get("JOBS", 1)) > 1:
     import distutils.ccompiler
     distutils.ccompiler.CCompiler.compile=parallelCCompile
 
@@ -357,7 +368,7 @@ setup(
             language='c++',
             extra_compile_args=extra_comp_args,
             extra_link_args=linkflags,
-            extra_objects=get_boost_library_static_paths()
+            extra_objects=(get_boost_library_static_paths() if static_boost else [])
         )
     ]
 )
