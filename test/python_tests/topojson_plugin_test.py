@@ -67,11 +67,10 @@ if 'topojson' in mapnik.DatasourceCache.plugin_names():
         eq_(f['NOM_FR'], u'Québec')
 
     def test_geojson_from_in_memory_string():
-        ds = mapnik.Datasource(
-            type='topojson',
-            inline=open(
-                '../data/topojson/escaped.topojson',
-                'r').read())
+        with open('../data/topojson/escaped.topojson', 'r') as datafile:
+            ds = mapnik.Datasource(
+                type='topojson',
+                inline=datafile.read())
         f = list(ds.all_features())[0]
         eq_(len(ds.fields()), 11)
 
