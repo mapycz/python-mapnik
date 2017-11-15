@@ -39,6 +39,46 @@
 
 #include "python_to_value.hpp"
 
+
+bool set_mvt_datasource(mapnik::layer & lyr,
+                        mapnik::box2d<double> const& buffered_extent,
+                        std::string const& map_srs,
+                        mapnik::vector_tile_impl::merc_tile const& tile)
+{
+    protozero::pbf_reader layer_msg;
+    if (tile.layer_reader(lyr.name(), layer_msg))
+    {
+        lyr.set_srs(map_srs);
+        using ds_type = mapnik::vector_tile_impl::tile_datasource_pbf;
+        using ds_holder_type = std::shared_ptr<ds_type>;
+        ds_holder_type ds = std::make_shared<ds_type>(
+            layer_msg, tile.x(), tile.y(), tile.z());
+        ds->set_envelope(buffered_extent);
+        lyr.set_datasource(ds);
+        return true;
+    }
+    return false;
+}
+
+void prepare_sublayers(mapnik::layer & lyr,
+                       mapnik::box2d<double> const& buffered_extent,
+                       double scale_denom,
+                       std::string const& map_srs,
+                       mapnik::vector_tile_impl::merc_tile const& tile)
+{
+    for (auto & sublyr : lyr.layers())
+    {
+        bool sublayer_used = sublyr.visible(scale_denom) &&
+            set_mvt_datasource(sublyr, buffered_extent, map_srs, tile);
+        sublyr.set_active(sublayer_used);
+        if (sublayer_used)
+        {
+            prepare_sublayers(sublyr, buffered_extent,
+                              scale_denom, map_srs, tile);
+        }
+    }
+}
+
 template <typename Renderer>
 void process_layers(Renderer & ren,
                     mapnik::request const& m_req,
@@ -48,21 +88,17 @@ void process_layers(Renderer & ren,
                     std::string const& map_srs,
                     mapnik::vector_tile_impl::merc_tile const& tile)
 {
+    mapnik::box2d<double> buffered_extent = m_req.get_buffered_extent();
     for (auto const& lyr : layers)
     {
         if (lyr.visible(scale_denom))
         {
-            protozero::pbf_reader layer_msg;
-            if (tile.layer_reader(lyr.name(), layer_msg))
+            mapnik::layer lyr_copy(lyr);
+            if (set_mvt_datasource(lyr_copy, buffered_extent, map_srs, tile))
             {
-                mapnik::layer lyr_copy(lyr);
-                lyr_copy.set_srs(map_srs);
-                using ds_type = mapnik::vector_tile_impl::tile_datasource_pbf;
-                using ds_holder_type = std::shared_ptr<ds_type>;
-                ds_holder_type ds = std::make_shared<ds_type>(
-                    layer_msg, tile.x(), tile.y(), tile.z());
-                ds->set_envelope(m_req.get_buffered_extent());
-                lyr_copy.set_datasource(ds);
+                prepare_sublayers(lyr_copy, buffered_extent,
+                                  scale_denom, map_srs, tile);
+                protozero::pbf_reader layer_msg;
                 std::set<std::string> names;
                 ren.apply_to_layer(lyr_copy,
                                    ren,

@@ -62,6 +62,31 @@ def test_render_mvt_merc():
     eq_(compare_file_size(actual, expected, 100), True)
 
 
+def test_render_mvt_merc_nested_layers():
+    m = mapnik.Map(512, 512)
+    mapnik.load_map(m, '../data-visual/styles/nested-layers-1.xml')
+    mvt = mapnik.VectorTileMerc(0, 0, 0)
+
+    im2 = mapnik.Image(m.width, m.height)
+    m.zoom_to_box(mvt.extent)
+    mapnik.render(m, im2)
+    actual2 = 'images/mvt/nested_layers.classic.actual.png'
+    expected2 = 'images/mvt/nested_layers.classic.expected.png'
+    im2.save(actual2, 'png32')
+    eq_(compare_file_size(actual2, expected2, 100), True)
+
+    mvt_buffer = mapnik.create_mvt_merc(m,
+        mvt.x, mvt.y, mvt.z)
+    mapnik.merge_compressed_buffer(mvt, mvt_buffer)
+
+    im = mapnik.Image(m.width, m.height)
+    mapnik.render_mvt_merc(mvt, m, im)
+
+    actual = 'images/mvt/nested_layers.mvt.actual.png'
+    im.save(actual, 'png32')
+    expected = 'images/mvt/nested_layers.mvt.expected.png'
+    eq_(compare_file_size(actual, expected, 100), True)
+
 def test_render_mvt_raster_with_large_overzoom():
     mvt = mapnik.VectorTileMerc(2788, 6533, 14);
 
