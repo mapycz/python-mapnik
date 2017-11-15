@@ -1,3 +1,10 @@
+szn-python-mapnik (3:3.9.0) Seznam; urgency=medium
+
+  * szn-mapnik 3.9.0
+  * basic support for rendering from vector tiles
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 15 Nov 2017 12:13:51 +0100
+
 szn-python-mapnik (3:3.8.8) Seznam; urgency=medium
 
   * szn-mapnik 3.8.8
