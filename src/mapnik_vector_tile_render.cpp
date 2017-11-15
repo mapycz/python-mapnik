@@ -146,7 +146,7 @@ void export_mvt_render()
          arg("variables") = boost::python::dict(),
          arg("scale_factor") = 1.0,
          // Override auto-calculated scale denominator
-         arg("scale_denominator") = 0.0,
+         arg("scale_denom") = 0.0,
          // Override buffer_size from Map
          arg("buffer_size") = boost::optional<std::int32_t>(),
          // Override MVT coordinates

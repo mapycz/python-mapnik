@@ -114,7 +114,7 @@ def test_render_mvt_with_optional_arguments():
 
     im = mapnik.Image(m.width, m.height)
     mapnik.render_mvt_merc(mvt, m, im,
-        scale_factor=1.2, scale_denominator=1.5,
+        scale_factor=1.2, scale_denom=1.5,
         variables={ 'pizza': 'pie' })
 
     expected = 'images/mvt/tile3.expected.png'
