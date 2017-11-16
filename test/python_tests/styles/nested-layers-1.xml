@@ -1,0 +1,24 @@
+<Map background-color="darkblue" srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over">
+    <Parameters>
+        <Parameter name="sizes">512,256</Parameter>
+        <Parameter name="bbox">-20037508.3427892476320267,1283343.6938826972618699,20037508.3427892439067364,13365151.3630704730749130</Parameter>
+    </Parameters>
+    <Style name="world">
+        <Rule>
+            <PolygonSymbolizer fill="white"/>
+        </Rule>
+    </Style>
+    <Style name="text">
+        <Rule>
+            <TextSymbolizer size="120" dy="-50" halo-radius="8" face-name="DejaVu Sans Bold" fill="white" vertical-alignment="top" placement="point">WORLD</TextSymbolizer>
+        </Rule>
+    </Style>
+
+    <Layer name="world" comp-op="src-over" srs="+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0.0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs +over">
+        <StyleName>world</StyleName>
+
+        <Layer name="text" comp-op="dst-in" srs="+proj=longlat +ellps=WGS84 +datum=WGS84 +no_defs">
+            <StyleName>text</StyleName>
+        </Layer>
+    </Layer>
+</Map>

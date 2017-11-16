@@ -85,6 +85,9 @@ def test_render_mvt_merc_nested_layers():
 
     mapnik.merge_compressed_buffer(mvt, mvt_buffer)
 
+    m = mapnik.Map(512, 512)
+    # Load a version of the style with no datasources
+    mapnik.load_map(m, 'styles/nested-layers-1.xml')
     im = mapnik.Image(m.width, m.height)
     mapnik.render_mvt_merc(mvt, m, im)
 
