@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.2) Seznam; urgency=medium
+
+  * szn-mapnik 3.9.2
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Tue, 05 Dec 2017 07:55:41 +0100
+
 szn-python-mapnik (3:3.9.1) Seznam; urgency=medium
 
   * MVT: Added support for nested layers
