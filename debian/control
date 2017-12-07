@@ -5,7 +5,7 @@ Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9),
                dh-python,
-               libboost-python1.55-dev,
+               libboost-python-dev,
                szn-libmapnik-dev (= 3:3.9.3),
                szn-mapnik-vector-tile-dev (>= 1.4.1),
                libprotobuf-dev,
