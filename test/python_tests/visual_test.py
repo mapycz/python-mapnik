@@ -167,7 +167,7 @@ class Reporting:
 
         if self.overwrite_failures:
             self.errors.append((self.REPLACE, actual, expected, diff, None))
-            with open(actual, 'r') as f:
+            with open(actual, 'rb') as f:
                 contents = f.read()
             with open(expected, 'wb') as f:
                 f.write(contents)
@@ -195,7 +195,7 @@ class Reporting:
         else:
             print(
                 '\x1b[33m?\x1b[0m (\x1b[34mReference file not found, creating\x1b[0m)')
-        with open(actual, 'r') as f:
+        with open(actual, 'rb') as f:
             contents = f.read()
         with open(expected, 'wb') as f:
             f.write(contents)
