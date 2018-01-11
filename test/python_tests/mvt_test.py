@@ -133,7 +133,7 @@ def test_create_mvt_merc_with_raster():
     eq_(layer.features_size(), 1)
     feature = layer.features(0)
     raster = feature.raster()
-    eq_(abs(len(raster) - 245690) < 10, True)
+    eq_(abs(len(raster) - 270050) < 10, True)
     img = mapnik.Image.frombuffer(raster)
     eq_(img.width(), 512)
     eq_(img.height(), 512)
