@@ -100,11 +100,6 @@ void export_mvt_create()
         .value("negative", fill_type::negative_fill)
     ;
 
-    enum_<std::launch>("threading_mode")
-        .value("async", std::launch::async)
-        .value("deferred", std::launch::deferred)
-    ;
-
     def("create_mvt_merc", &create_mvt_merc,
         (arg("map"),
          arg("x"),

@@ -702,8 +702,6 @@ bool has_pycairo()
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-local-typedef"
-BOOST_PYTHON_FUNCTION_OVERLOADS(load_map_overloads, load_map, 2, 4)
-BOOST_PYTHON_FUNCTION_OVERLOADS(load_map_string_overloads, load_map_string, 2, 4)
 BOOST_PYTHON_FUNCTION_OVERLOADS(save_map_overloads, save_map, 2, 3)
 BOOST_PYTHON_FUNCTION_OVERLOADS(save_map_to_string_overloads, save_map_to_string, 1, 2)
 BOOST_PYTHON_FUNCTION_OVERLOADS(render_overloads, render, 2, 5)
@@ -773,6 +771,11 @@ BOOST_PYTHON_MODULE(_mapnik)
     export_label_collision_detector();
     export_logger();
     export_label_placement();
+
+    enum_<std::launch>("threading_mode")
+        .value("async", std::launch::async)
+        .value("deferred", std::launch::deferred)
+    ;
 
     def("clear_cache", &clear_cache,
         "\n"
@@ -1026,9 +1029,19 @@ BOOST_PYTHON_MODULE(_mapnik)
         "\n"
         );
 
-    def("load_map", &load_map, load_map_overloads());
+    def("load_map", &load_map,
+        (arg("map"),
+         arg("filename"),
+         arg("strict") = false,
+         arg("base_path") = std::string(),
+         arg("datasource_init") = std::launch::deferred));
 
-    def("load_map_from_string", &load_map_string, load_map_string_overloads());
+    def("load_map_from_string", &load_map_string,
+        (arg("map"),
+         arg("str"),
+         arg("strict") = false,
+         arg("base_path") = std::string(),
+         arg("datasource_init") = std::launch::deferred));
 
     def("save_map", &save_map, save_map_overloads());
 /*

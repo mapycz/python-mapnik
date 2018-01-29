@@ -84,22 +84,23 @@ def test_good_files():
     good_files.extend(glob.glob("../visual_tests/styles/*.xml"))
 
     failures = []
-    for filename in good_files:
-        try:
-            m = mapnik.Map(512, 512)
-            strict = True
-            mapnik.load_map(m, filename, strict)
-            base_path = os.path.dirname(filename)
-            with open(filename, 'rb') as f:
+    for ds_init in [mapnik.threading_mode.deferred, mapnik.threading_mode.async]:
+        for filename in good_files:
+            try:
                 m = mapnik.Map(512, 512)
-                mapnik.load_map_from_string(m, f.read(), strict, base_path)
-        except RuntimeError as e:
-            # only test datasources that we have installed
-            if not 'Could not create datasource' in str(e) \
-               and not 'could not connect' in str(e):
-                failures.append(
-                    'Failed to load valid map %s (%s)' %
-                    (filename, e))
+                strict = True
+                mapnik.load_map(m, filename, strict, datasource_init=ds_init)
+                base_path = os.path.dirname(filename)
+                with open(filename, 'rb') as f:
+                    m = mapnik.Map(512, 512)
+                    mapnik.load_map_from_string(m, f.read(), strict, base_path, datasource_init=ds_init)
+            except RuntimeError as e:
+                # only test datasources that we have installed
+                if not 'Could not create datasource' in str(e) \
+                   and not 'could not connect' in str(e):
+                    failures.append(
+                        'Failed to load valid map %s (%s)' %
+                        (filename, e))
     eq_(len(failures), 0, '\n' + '\n'.join(failures))
 
 if __name__ == "__main__":
