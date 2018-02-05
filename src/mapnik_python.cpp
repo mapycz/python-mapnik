@@ -1139,14 +1139,14 @@ BOOST_PYTHON_MODULE(_mapnik)
          arg("filename"),
          arg("strict") = false,
          arg("base_path") = std::string(),
-         arg("datasource_init") = std::launch::deferred));
+         arg("datasource_init") = std::launch::async));
 
     def("load_map_from_string", &load_map_string,
         (arg("map"),
          arg("str"),
          arg("strict") = false,
          arg("base_path") = std::string(),
-         arg("datasource_init") = std::launch::deferred));
+         arg("datasource_init") = std::launch::async));
 
     def("save_map", &save_map, save_map_overloads());
 /*
