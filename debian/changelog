@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.15) Seznam; urgency=medium
+
+  * szn-mapnik 3.9.15
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 04 Apr 2018 21:54:05 +0200
+
 szn-python-mapnik (3:3.9.14) Seznam; urgency=medium
 
   * Support for parallelizer
