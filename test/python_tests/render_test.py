@@ -284,6 +284,27 @@ if 'shape' in mapnik.DatasourceCache.plugin_names():
                 'failed comparing actual (%s) and expected (%s)' % (actual_file,
                                                                     expected_file))
 
+
+def test_render_with_parallelizer():
+    m = mapnik.Map(400, 400)
+    mapnik.load_map(m, '../data/good_maps/parallelization-1.xml')
+    m.zoom_all()
+
+    im_parallel = mapnik.Image(m.width, m.height)
+    mapnik.render(m, im_parallel)
+
+    m.layers[0].name = "test"
+    im = mapnik.Image(m.width, m.height)
+    mapnik.render(m, im)
+
+    #im_parallel.save("/tmp/_p_py_par.png", 'png32')
+    #im.save("/tmp/_p_py_orig.png", 'png32')
+
+    eq_(im_parallel.tostring('png32'),
+        im.tostring('png32'),
+        'failed comparing actual (%s) and expected (%s)' % (im_parallel, im))
+
+
 if __name__ == "__main__":
     setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))

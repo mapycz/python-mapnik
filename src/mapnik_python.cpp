@@ -22,6 +22,7 @@
 
 #include <mapnik/config.hpp>
 #include "boost_std_shared_shim.hpp"
+#include <mapnik/util/parallelizer.hpp>
 
 #pragma GCC diagnostic push
 #include <mapnik/warning_ignore.hpp>
@@ -220,8 +221,16 @@ struct agg_renderer_visitor_1
 template <>
 void agg_renderer_visitor_1::operator()<mapnik::image_rgba8> (mapnik::image_rgba8 & pixmap)
 {
-    mapnik::agg_renderer<mapnik::image_rgba8> ren(m_,pixmap,scale_factor_,offset_x_, offset_y_);
-    ren.apply();
+    if (mapnik::parallelizer::is_parallelizable(m_))
+    {
+        const double scale_denom = 0;
+        mapnik::parallelizer::render(m_, pixmap, scale_denom, scale_factor_);
+    }
+    else
+    {
+        mapnik::agg_renderer<mapnik::image_rgba8> ren(m_,pixmap,scale_factor_,offset_x_, offset_y_);
+        ren.apply();
+    }
 }
 
 struct agg_renderer_visitor_2
