@@ -29,5 +29,17 @@ def test_layer_init():
     eq_(l.buffer_size, None)
     eq_(len(l.styles), 0)
 
+def test_layer_sublayers():
+    m = mapnik.Map(512, 512)
+    strict = True
+    filename = "../data/good_maps/nested-layers-1.xml"
+    mapnik.load_map(m, filename, strict)
+
+    eq_(len(m.layers), 1)
+    eq_(len(m.layers[0].layers), 1)
+
+    sublayer = m.layers[0].layers[0]
+    eq_(sublayer.name, "text")
+
 if __name__ == "__main__":
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))

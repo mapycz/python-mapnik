@@ -146,6 +146,8 @@ void export_layer()
         .def(vector_indexing_suite<std::vector<std::string>,true >())
         ;
 
+    std::deque<layer>& (layer::*layers_nonconst)() = &layer::layers;
+
     class_<layer>("Layer", "A Mapnik map layer.", init<std::string const&,optional<std::string const&> >(
                       "Create a Layer with a named string and, optionally, an srs string.\n"
                       "\n"
@@ -381,6 +383,18 @@ void export_layer()
                       ">>> lyr.styles[0]\n"
                       "'My Style'\n"
             )
+
+        .add_property("layers",make_function
+                      (layers_nonconst,return_value_policy<reference_existing_object>()),
+                      "The list of sublayers.\n"
+                      "\n"
+                      "Usage:\n"
+                      ">>> lay.layers\n"
+                      "<mapnik._mapnik.layers object at 0x6d458>"
+                      ">>> lay.layers[0]\n"
+                      "<mapnik._mapnik.layer object at 0x5fe130>\n"
+            )
+
         // comparison
         .def(self == self)
         ;
