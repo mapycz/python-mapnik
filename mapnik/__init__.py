@@ -103,14 +103,6 @@ def Filter(*args, **kwargs):
     return Expression(*args, **kwargs)
 
 
-class Envelope(Box2d):
-
-    def __init__(self, *args, **kwargs):
-        warnings.warn("'Envelope' is deprecated and will be removed in Mapnik 3.x, use 'Box2d' instead",
-                      DeprecationWarning, 2)
-        Box2d.__init__(self, *args, **kwargs)
-
-
 class _Coord(Coord, _injector()):
     """
     Represents a point with two coordinates (either lon/lat or x/y).
