@@ -390,6 +390,9 @@ def setup():
 
 # Include visual tests to the suite
 def test_visual():
+    if os.environ.get("MAPNIK_VISUAL_TESTS", "true") != "true":
+        return
+
     setup()
     error_count = run('../data-visual', [], True, True, False)
     eq_(error_count, 0)
