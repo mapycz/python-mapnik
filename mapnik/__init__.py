@@ -97,12 +97,6 @@ def _injector() :
     return _MapnikMetaclass('_injector', (object, ), {})
 
 
-def Filter(*args, **kwargs):
-    warnings.warn("'Filter' is deprecated and will be removed in Mapnik 3.x, use 'Expression' instead",
-                  DeprecationWarning, 2)
-    return Expression(*args, **kwargs)
-
-
 class _Coord(Coord, _injector()):
     """
     Represents a point with two coordinates (either lon/lat or x/y).

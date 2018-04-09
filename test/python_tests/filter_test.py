@@ -14,9 +14,6 @@ if PYTHON3:
     unicode = str
 
 
-if hasattr(mapnik, 'Expression'):
-    mapnik.Filter = mapnik.Expression
-
 map_ = '''<Map>
     <Style name="s">
         <Rule>
@@ -64,22 +61,22 @@ def test_filter_init():
     m = mapnik.Map(1, 1)
     mapnik.load_map_from_string(m, map_)
     filters = []
-    filters.append(mapnik.Filter("([region]>=0) and ([region]<=50)"))
-    filters.append(mapnik.Filter("(([region]>=0) and ([region]<=50))"))
-    filters.append(mapnik.Filter("((([region]>=0) and ([region]<=50)))"))
-    filters.append(mapnik.Filter('((([region]>=0) and ([region]<=50)))'))
-    filters.append(mapnik.Filter('''((([region]>=0) and ([region]<=50)))'''))
-    filters.append(mapnik.Filter('''
+    filters.append(mapnik.Expression("([region]>=0) and ([region]<=50)"))
+    filters.append(mapnik.Expression("(([region]>=0) and ([region]<=50))"))
+    filters.append(mapnik.Expression("((([region]>=0) and ([region]<=50)))"))
+    filters.append(mapnik.Expression('((([region]>=0) and ([region]<=50)))'))
+    filters.append(mapnik.Expression('''((([region]>=0) and ([region]<=50)))'''))
+    filters.append(mapnik.Expression('''
     ((([region]>=0)
     and
     ([region]<=50)))
     '''))
-    filters.append(mapnik.Filter('''
+    filters.append(mapnik.Expression('''
     ([region]>=0)
     and
     ([region]<=50)
     '''))
-    filters.append(mapnik.Filter('''
+    filters.append(mapnik.Expression('''
     ([region]
     >=
     0)
