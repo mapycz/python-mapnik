@@ -1038,6 +1038,13 @@ BOOST_PYTHON_MODULE(_mapnik)
         "\n"
         );
 
+    def("scale_denominator", &mapnik::scale_denominator,
+        (arg("scale"),arg("is_geographic")),
+        "\n"
+        "Return the Scale Denominator.\n"
+        "\n"
+        );
+
     def("load_map", &load_map,
         (arg("map"),
          arg("filename"),

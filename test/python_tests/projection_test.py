@@ -164,5 +164,8 @@ def test_proj_antimeridian_bbox():
     assert_box2d_almost_equal(rev_ext, normal)
 
 
+def test_scale_denominator():
+    eq_(mapnik.scale_denominator(1000.0 * 0.00028, False), 1000.0)
+
 if __name__ == "__main__":
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
