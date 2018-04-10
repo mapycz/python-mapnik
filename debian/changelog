@@ -1,3 +1,12 @@
+szn-python-mapnik (3:3.9.16) Seznam; urgency=medium
+
+  * Removed deprecated class mapnik.Envelope
+  * Removed deprecated class mapnik.Filter
+  * Sublayers are now exposed on Layer class by Layer.layers
+  * Exposed mapnik::scale_denominator()
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Tue, 10 Apr 2018 17:05:18 +0200
+
 szn-python-mapnik (3:3.9.15) Seznam; urgency=medium
 
   * szn-mapnik 3.9.15
