@@ -231,6 +231,9 @@ void agg_renderer_visitor_1::operator()<mapnik::image_rgba8> (mapnik::image_rgba
         mapnik::agg_renderer<mapnik::image_rgba8> ren(m_,pixmap,scale_factor_,offset_x_, offset_y_);
         ren.apply();
     }
+#ifdef MAPNIK_STATS_RENDER
+    std::clog << "PAINTED: " << (pixmap.painted() ? "true" : "false") << std::endl;
+#endif
 }
 
 struct agg_renderer_visitor_2
