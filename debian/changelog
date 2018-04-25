@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.17) Seznam; urgency=medium
+
+  * szn-mapnik 3.9.17
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 25 Apr 2018 13:10:23 +0200
+
 szn-python-mapnik (3:3.9.16) Seznam; urgency=medium
 
   * Removed deprecated class mapnik.Envelope
