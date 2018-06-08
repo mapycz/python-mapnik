@@ -151,13 +151,15 @@ std::size_t hash_impl_2(T const& sym)
 struct extract_underlying_type_visitor
 {
     template <typename T>
-    boost::python::object operator() (T const& sym) const
+    boost::python::object operator() (T & sym) const
     {
-        return boost::python::object(sym);
+        using namespace boost::python;
+        using converter = typename reference_existing_object::apply<T &>::type;
+        return object(handle<>(converter()(sym)));
     }
 };
 
-boost::python::object extract_underlying_type(symbolizer const& sym)
+boost::python::object extract_underlying_type(symbolizer & sym)
 {
     return mapnik::util::apply_visitor(extract_underlying_type_visitor(), sym);
 }

@@ -56,6 +56,22 @@ def test_introspect_symbolizers():
     eq_(p2.opacity, 0.5)
     eq_(p2.filename, '../data/images/dummy.png')
 
+    # Make sure that extract() does not copy
+    # the symbolizer object
+
+    # Take new reference
+    p3 = sym.extract()
+
+    # Modify the object through the old reference
+    p2.allow_overlap = False
+    p2.opacity = 1.0
+    p2.file = '../data/images/xxx.png'
+
+    eq_(p2.allow_overlap, p3.allow_overlap)
+    eq_(p2.opacity, p3.opacity)
+    eq_(p2.file, p3.file)
+
+
 if __name__ == "__main__":
     setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
