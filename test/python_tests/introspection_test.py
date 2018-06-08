@@ -22,10 +22,6 @@ def test_introspect_symbolizers():
     p.allow_overlap = True
     p.opacity = 0.5
 
-    eq_(p.allow_overlap, True)
-    eq_(p.opacity, 0.5)
-    eq_(p.filename, '../data/images/dummy.png')
-
     # make sure the defaults
     # are what we think they are
     eq_(p.allow_overlap, True)
