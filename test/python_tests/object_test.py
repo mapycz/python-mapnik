@@ -37,7 +37,7 @@ def test_symbolizer():
         s = cls()
         eq_(s.clip, None)
         s.clip = True
-        eq_(s.clip, True)
+        eq_(s.clip is True, True)
 
 
 if __name__ == "__main__":
