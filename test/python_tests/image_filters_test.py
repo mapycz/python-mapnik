@@ -16,11 +16,6 @@ def setup():
     os.chdir(execution_path('.'))
 
 
-def replace_style(m, name, style):
-    m.remove_style(name)
-    m.append_style(name, style)
-
-
 def test_append():
     s = mapnik.Style()
     eq_(s.image_filters, '')
@@ -43,11 +38,8 @@ if 'shape' in mapnik.DatasourceCache.plugin_names():
                 filename = "none"
             else:
                 filename = re.sub(r"[^-_a-z.0-9]", "", name)
-            # find_style returns a copy of the style object
             style_markers = m.find_style("markers")
             style_markers.image_filters = name
-            # replace the original style with the modified one
-            replace_style(m, "markers", style_markers)
             im = mapnik.Image(m.width, m.height)
             mapnik.render(m, im)
             actual = '/tmp/mapnik-style-image-filter-' + filename + '.png'

@@ -32,10 +32,6 @@ def debug_image(image, step=2):
                 (red, green, blue, alpha, x, y))
 
 
-def replace_style(m, name, style):
-    m.remove_style(name)
-    m.append_style(name, style)
-
 # note: it is impossible to know for all pixel colors
 # we can only detect likely cases of non premultiplied colors
 
@@ -188,11 +184,8 @@ if 'shape' in mapnik.DatasourceCache.plugin_names():
         successes = []
         fails = []
         for name in mapnik.CompositeOp.names:
-            # find_style returns a copy of the style object
             style_markers = m.find_style("markers")
             style_markers.comp_op = getattr(mapnik.CompositeOp, name)
-            # replace the original style with the modified one
-            replace_style(m, "markers", style_markers)
             im = mapnik.Image(m.width, m.height)
             mapnik.render(m, im)
             actual = '/tmp/mapnik-style-comp-op-' + name + '.png'
