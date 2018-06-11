@@ -61,9 +61,9 @@ void insert_fontset(mapnik::Map & m, std::string const& name, mapnik::font_set c
     m.insert_fontset(name,fontset);
 }
 
-mapnik::feature_type_style find_style(mapnik::Map const& m, std::string const& name)
+mapnik::feature_type_style & find_style(mapnik::Map & m, std::string const& name)
 {
-    boost::optional<mapnik::feature_type_style const&> style = m.find_style(name);
+    boost::optional<mapnik::feature_type_style &> style = m.find_style(name);
     if (!style)
     {
         PyErr_SetString(PyExc_KeyError, "Invalid style name");
@@ -120,16 +120,24 @@ void set_maximum_extent(mapnik::Map & m, boost::optional<mapnik::box2d<double> >
 struct extract_style
 {
     using result_type = boost::python::tuple;
-    result_type operator() (std::map<std::string, mapnik::feature_type_style>::value_type const& val) const
+    using style_type = mapnik::feature_type_style;
+    using value_type = std::map<std::string, style_type>::value_type;
+
+    result_type operator() (value_type & val) const
     {
-        return boost::python::make_tuple(val.first,val.second);
+        using namespace boost::python;
+        using converter = typename reference_existing_object
+            ::apply<style_type &>::type;
+        return boost::python::make_tuple(
+            val.first,
+            handle<>(converter()(val.second)));
     }
 };
 
-using style_extract_iterator = boost::transform_iterator<extract_style, Map::const_style_iterator>;
+using style_extract_iterator = boost::transform_iterator<extract_style, Map::style_iterator>;
 using style_range = std::pair<style_extract_iterator,style_extract_iterator>;
 
-style_range _styles_ (mapnik::Map const& m)
+style_range _styles_ (mapnik::Map & m)
 {
     return style_range(
         boost::make_transform_iterator<extract_style>(m.begin_styles(), extract_style()),
@@ -235,6 +243,7 @@ void export_map()
 
         .def("find_style",
              find_style,
+             boost::python::return_internal_reference<>(),
              (arg("name")),
              "Query the Map for a style by name and return\n"
              "a style object if found or raise KeyError\n"

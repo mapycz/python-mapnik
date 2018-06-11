@@ -72,6 +72,60 @@ def test_introspect_symbolizers():
     eq_(p2.file, p3.file)
 
 
+def test_mutability_of_styles_by_find_style():
+    """
+    Should be able to mutate style by a reference
+    returned from find_style()
+    """
+    p = mapnik.PointSymbolizer()
+    p.allow_overlap = True
+    p.opacity = 0.5
+
+    r = mapnik.Rule()
+    r.symbols.append(p)
+    s = mapnik.Style()
+    s.rules.append(r)
+    m = mapnik.Map(256, 256)
+    m.append_style('s', s)
+
+    s2 = m.find_style('s')
+    eq_(len(s2.rules), 1)
+
+    s3 = m.find_style('s')
+    s3.rules.append(mapnik.Rule())
+
+    # Both referefences should point to the same object
+    eq_(len(s3.rules), 2)
+    eq_(len(s2.rules), 2)
+
+
+def test_mutability_of_styles_from_iterator():
+    """
+    Should be able to mutate style by a reference
+    returned from the iterator
+    """
+    p = mapnik.PointSymbolizer()
+    p.allow_overlap = True
+    p.opacity = 0.5
+
+    r = mapnik.Rule()
+    r.symbols.append(p)
+    s = mapnik.Style()
+    s.rules.append(r)
+    m = mapnik.Map(256, 256)
+    m.append_style('s', s)
+
+    for style_name, style in m.styles:
+        eq_(style_name, 's')
+        eq_(len(style.rules), 1)
+        style.rules.append(mapnik.Rule())
+        eq_(len(style.rules), 2)
+
+    for style_name, style in m.styles:
+        eq_(style_name, 's')
+        eq_(len(style.rules), 2)
+
+
 if __name__ == "__main__":
     setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
