@@ -63,6 +63,7 @@ using mapnik::building_symbolizer;
 using mapnik::markers_symbolizer;
 using mapnik::debug_symbolizer;
 using mapnik::group_symbolizer;
+using mapnik::collision_symbolizer;
 using mapnik::symbolizer_base;
 using mapnik::color;
 using mapnik::path_processor_type;
@@ -344,6 +345,16 @@ void export_building_symbolizer()
         .def("__hash__",hash_impl_2<building_symbolizer>)
         ;
 
+}
+
+void export_collision_symbolizer()
+{
+    using namespace boost::python;
+
+    class_<collision_symbolizer, bases<symbolizer_base> >("CollisionSymbolizer",
+                                 init<>("Default Collision Symbolizer"))
+        .def("__hash__",hash_impl_2<collision_symbolizer>)
+        ;
 }
 
 namespace {

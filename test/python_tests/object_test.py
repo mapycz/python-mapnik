@@ -1,3 +1,25 @@
+#!/usr/bin/env python
+
+import glob
+import os
+
+from nose.tools import eq_
+
+import mapnik
+
+from .utilities import execution_path, run_all
+
+
+def test_collision_symbolizer():
+    s = mapnik.CollisionSymbolizer()
+    s.collision_cache_detect = "key"
+    eq_(s.collision_cache_detect, "key")
+
+
+if __name__ == "__main__":
+    setup()
+    exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
+
 # #!/usr/bin/env python
 # # -*- coding: utf-8 -*-
 
