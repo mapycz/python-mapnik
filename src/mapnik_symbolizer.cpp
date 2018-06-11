@@ -206,6 +206,16 @@ void export_symbolizer()
 }
 
 
+void export_text_symbolizer()
+{
+    using namespace boost::python;
+    class_<text_symbolizer, bases<symbolizer_base>>("TextSymbolizer",
+                            init<>())
+        .def("__hash__",hash_impl_2<text_symbolizer>)
+        ;
+}
+
+
 void export_shield_symbolizer()
 {
     using namespace boost::python;
@@ -236,7 +246,7 @@ void export_polygon_pattern_symbolizer()
         .value("GLOBAL",mapnik::GLOBAL_ALIGNMENT)
         ;
 
-    class_<polygon_pattern_symbolizer>("PolygonPatternSymbolizer",
+    class_<polygon_pattern_symbolizer, bases<symbolizer_base>>("PolygonPatternSymbolizer",
                                        init<>("Default ctor"))
         .def("__hash__",hash_impl_2<polygon_pattern_symbolizer>)
         ;

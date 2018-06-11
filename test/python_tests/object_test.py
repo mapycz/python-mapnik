@@ -12,8 +12,32 @@ from .utilities import execution_path, run_all
 
 def test_collision_symbolizer():
     s = mapnik.CollisionSymbolizer()
+    eq_(s.collision_cache_detect, None)
     s.collision_cache_detect = "key"
     eq_(s.collision_cache_detect, "key")
+
+
+def test_symbolizer():
+    clases = [
+        mapnik.LineSymbolizer,
+        mapnik.LinePatternSymbolizer,
+        mapnik.DebugSymbolizer,
+        mapnik.CollisionSymbolizer,
+        mapnik.BuildingSymbolizer,
+        mapnik.GroupSymbolizer,
+        mapnik.TextSymbolizer,
+        mapnik.ShieldSymbolizer,
+        mapnik.RasterSymbolizer,
+        mapnik.PointSymbolizer,
+        mapnik.MarkersSymbolizer,
+        mapnik.PolygonSymbolizer,
+        mapnik.PolygonPatternSymbolizer,
+    ]
+    for cls in clases:
+        s = cls()
+        eq_(s.clip, None)
+        s.clip = True
+        eq_(s.clip, True)
 
 
 if __name__ == "__main__":

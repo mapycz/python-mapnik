@@ -416,11 +416,6 @@ void export_text_placement()
         .value("FULL",HALO_RASTERIZER_FULL)
         .value("FAST",HALO_RASTERIZER_FAST)
         ;
-    */
-    class_<text_symbolizer>("TextSymbolizer",
-                            init<>())
-        ;
-    /*
 
     class_with_converter<text_symbolizer_properties>
         ("TextSymbolizerProperties")
