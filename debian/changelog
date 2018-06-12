@@ -1,3 +1,13 @@
+szn-python-mapnik (3:3.9.24) Seznam; urgency=medium
+
+  * Make Symbolizer.extract() return reference instead of a copy
+  * Return reference to style objects from Map.find_style() and Map.styles instead of a copy
+  * Basic support for CollisionSymbolizer
+  * Fixed wrappers of TextSymbolizer and PolygonPatternSymbolizer
+  * Fixed conversion of mapnik::bool_value to Python bool
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Tue, 12 Jun 2018 16:37:57 +0200
+
 szn-python-mapnik (3:3.9.23) Seznam; urgency=medium
 
   * szn-mapnik 3.9.23
