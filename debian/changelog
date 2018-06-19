@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.25) Seznam; urgency=medium
+
+  * szn-mapnik 3.9.25
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Tue, 19 Jun 2018 09:43:29 +0200
+
 szn-python-mapnik (3:3.9.24) Seznam; urgency=medium
 
   * Make Symbolizer.extract() return reference instead of a copy
