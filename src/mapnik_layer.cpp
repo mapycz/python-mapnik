@@ -395,6 +395,16 @@ void export_layer()
                       "<mapnik._mapnik.layer object at 0x5fe130>\n"
             )
 
+        .add_property("opacity",
+                      &layer::get_opacity,
+                      &layer::set_opacity,
+                      "Set/get the opacity of the layer")
+
+        .add_property("comp_op",
+                      &layer::comp_op,
+                      &layer::set_comp_op,
+                      "Set/get the comp-op (composite operation) of the layer")
+
         // comparison
         .def(self == self)
         ;

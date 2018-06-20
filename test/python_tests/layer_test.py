@@ -2,10 +2,17 @@
 # -*- coding: utf-8 -*-
 
 from nose.tools import eq_
+import os
 
 import mapnik
 
-from .utilities import run_all
+from .utilities import execution_path, run_all
+
+
+def setup():
+    # All of the paths used are relative, if we run the tests
+    # from another directory we need to chdir()
+    os.chdir(execution_path('.'))
 
 
 # Map initialization
@@ -27,7 +34,10 @@ def test_layer_init():
     eq_(l.group_by, "")
     eq_(l.maximum_extent, None)
     eq_(l.buffer_size, None)
+    eq_(l.opacity, 1.0)
+    eq_(l.comp_op, None)
     eq_(len(l.styles), 0)
+
 
 def test_layer_sublayers():
     m = mapnik.Map(512, 512)
@@ -41,5 +51,21 @@ def test_layer_sublayers():
     sublayer = m.layers[0].layers[0]
     eq_(sublayer.name, "text")
 
+
+def test_layer_comp_op():
+    l = mapnik.Layer('test')
+    eq_(l.comp_op, None)
+    l.comp_op = mapnik.CompositeOp.dst_out
+    eq_(l.comp_op, mapnik.CompositeOp.dst_out)
+
+
+def test_layer_opacity():
+    l = mapnik.Layer('test')
+    eq_(l.opacity, 1.0)
+    l.opacity = 0.5
+    eq_(l.opacity, 0.5)
+
+
 if __name__ == "__main__":
+    setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
