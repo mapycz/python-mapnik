@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.26) Seznam; urgency=medium
+
+  * Exposed Layer.comp_op and Layer.opacity
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 20 Jun 2018 16:46:42 +0200
+
 szn-python-mapnik (3:3.9.25) Seznam; urgency=medium
 
   * szn-mapnik 3.9.25
