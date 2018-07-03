@@ -361,22 +361,12 @@ void render_with_detector(
 
 void render_layer2(mapnik::Map const& map,
                    mapnik::image_any& image,
-                   unsigned layer_idx,
+                   mapnik::layer const& layer,
                    double scale_factor,
                    unsigned offset_x,
                    unsigned offset_y)
 {
-    std::deque<mapnik::layer> const& layers = map.layers();
-    std::size_t layer_num = layers.size();
-    if (layer_idx >= layer_num) {
-        std::ostringstream s;
-        s << "Zero-based layer index '" << layer_idx << "' not valid, only '"
-          << layer_num << "' layers are in map\n";
-        throw std::runtime_error(s.str());
-    }
-
     python_unblock_auto_block b;
-    mapnik::layer const& layer = layers[layer_idx];
     std::set<std::string> names;
     mapnik::util::apply_visitor(agg_renderer_visitor_4(map, scale_factor, offset_x, offset_y, layer, names), image);
 }
