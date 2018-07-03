@@ -341,7 +341,7 @@ def test_render_layer():
 if mapnik.has_pycairo():
     import cairo
 
-    def test_render_layer_cairo():
+    def test_render_layer_to_cairo_surface():
         ds = mapnik.MemoryDatasource()
         context = mapnik.Context()
         context.push('Name')
@@ -367,6 +367,43 @@ if mapnik.has_pycairo():
         surface = cairo.ImageSurface(
             cairo.FORMAT_ARGB32, m.width, m.height)
         mapnik.render_layer(m, surface, lyr)
+
+        im = mapnik.Image.from_cairo(surface)
+
+        eq_(im.is_solid(), True)
+        c = im.get_pixel(0, 0, True)
+        eq_(c.r, 255)
+        eq_(c.g, 0)
+        eq_(c.b, 0)
+        eq_(c.a, 255)
+
+    def test_render_layer_to_cairo_context():
+        ds = mapnik.MemoryDatasource()
+        context = mapnik.Context()
+        context.push('Name')
+        f = mapnik.Feature(context, 1)
+        f['Name'] = 'poly'
+        f.geometry = mapnik.Geometry.from_wkt(
+            'POLYGON ((1 1, -1 1, -1 -1, 1 -1, 1 1))')
+        ds.add_feature(f)
+        s = mapnik.Style()
+        r = mapnik.Rule()
+        symb = mapnik.PolygonSymbolizer()
+        symb.fill = mapnik.Color('red')
+        r.symbols.append(symb)
+        s.rules.append(r)
+        lyr = mapnik.Layer('poly')
+        lyr.datasource = ds
+        lyr.styles.append('poly')
+        m = mapnik.Map(256, 256)
+        m.append_style('poly', s)
+        m.layers.append(lyr)
+        m.zoom_all()
+
+        surface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32, m.width, m.height)
+        context = cairo.Context(surface)
+        mapnik.render_layer(m, context, lyr)
 
         im = mapnik.Image.from_cairo(surface)
 

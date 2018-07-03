@@ -462,12 +462,12 @@ void render_with_detector5(
     ren.apply();
 }
 
-void render_layer_cairo(mapnik::Map const& map,
-                        PycairoSurface* py_surface,
-                        mapnik::layer const& layer,
-                        double scale_factor,
-                        unsigned offset_x,
-                        unsigned offset_y)
+void render_layer_to_cairo_surface(mapnik::Map const& map,
+                                   PycairoSurface* py_surface,
+                                   mapnik::layer const& layer,
+                                   double scale_factor,
+                                   unsigned offset_x,
+                                   unsigned offset_y)
 {
     python_unblock_auto_block b;
     mapnik::cairo_surface_ptr surface(
@@ -476,6 +476,26 @@ void render_layer_cairo(mapnik::Map const& map,
     mapnik::cairo_renderer<mapnik::cairo_ptr> ren(
         map,
         mapnik::create_context(surface),
+        scale_factor,
+        offset_x,
+        offset_y);
+    std::set<std::string> names;
+    ren.apply(layer, names);
+}
+
+void render_layer_to_cairo_context(mapnik::Map const& map,
+                                   PycairoContext* py_context,
+                                   mapnik::layer const& layer,
+                                   double scale_factor,
+                                   unsigned offset_x,
+                                   unsigned offset_y)
+{
+    python_unblock_auto_block b;
+    mapnik::cairo_ptr context(
+        cairo_reference(py_context->ctx), mapnik::cairo_closer());
+    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(
+        map,
+        context,
         scale_factor,
         offset_x,
         offset_y);
@@ -910,9 +930,19 @@ BOOST_PYTHON_MODULE(_mapnik)
         );
 
 #if defined(HAVE_CAIRO) && defined(HAVE_PYCAIRO)
-    def("render_layer", &render_layer_cairo,
+    def("render_layer", &render_layer_to_cairo_surface,
         (arg("map"),
          arg("surface"),
+         arg("layer"),
+         arg("scale_factor")=1.0,
+         arg("offset_x")=0,
+         arg("offset_y")=0
+        )
+        );
+
+    def("render_layer", &render_layer_to_cairo_context,
+        (arg("map"),
+         arg("context"),
          arg("layer"),
          arg("scale_factor")=1.0,
          arg("offset_x")=0,
