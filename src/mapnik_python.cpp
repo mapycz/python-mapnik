@@ -462,6 +462,27 @@ void render_with_detector5(
     ren.apply();
 }
 
+void render_layer_cairo(mapnik::Map const& map,
+                        PycairoSurface* py_surface,
+                        mapnik::layer const& layer,
+                        double scale_factor,
+                        unsigned offset_x,
+                        unsigned offset_y)
+{
+    python_unblock_auto_block b;
+    mapnik::cairo_surface_ptr surface(
+        cairo_surface_reference(py_surface->surface),
+        mapnik::cairo_surface_closer());
+    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(
+        map,
+        mapnik::create_context(surface),
+        scale_factor,
+        offset_x,
+        offset_y);
+    std::set<std::string> names;
+    ren.apply(layer, names);
+}
+
 #endif
 
 
@@ -887,6 +908,18 @@ BOOST_PYTHON_MODULE(_mapnik)
          arg("offset_y")=0
         )
         );
+
+#if defined(HAVE_CAIRO) && defined(HAVE_PYCAIRO)
+    def("render_layer", &render_layer_cairo,
+        (arg("map"),
+         arg("surface"),
+         arg("layer"),
+         arg("scale_factor")=1.0,
+         arg("offset_x")=0,
+         arg("offset_y")=0
+        )
+        );
+#endif
 
 #if defined(GRID_RENDERER)
     def("render_layer", &mapnik::render_layer_for_grid,
