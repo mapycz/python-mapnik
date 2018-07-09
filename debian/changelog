@@ -1,3 +1,12 @@
+szn-python-mapnik (3:3.9.27) Seznam; urgency=medium
+
+  * Layer parameter of render_layer() given by object reference
+    instead of array index
+  * Support for render_layer() with Cairo
+  * Exposed mapnik.Image.to_cairo()
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Mon, 09 Jul 2018 16:37:26 +0200
+
 szn-python-mapnik (3:3.9.26) Seznam; urgency=medium
 
   * Exposed Layer.comp_op and Layer.opacity
