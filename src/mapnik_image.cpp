@@ -330,6 +330,20 @@ std::shared_ptr<image_any> from_cairo(PycairoSurface* py_surface)
     cairo_image_to_rgba8(image, surface);
     return std::make_shared<image_any>(std::move(image));
 }
+
+void to_cairo(image_any const& src, PycairoSurface* py_surface)
+{
+    mapnik::cairo_surface_ptr surface(
+        cairo_surface_reference(
+            py_surface->surface),
+            mapnik::cairo_surface_closer());
+    if (!src.is<mapnik::image_rgba8>())
+    {
+        throw std::runtime_error("Only image_rgba8 is supported on the input.");
+    }
+    mapnik::image_rgba8 const& img = src.get<mapnik::image_rgba8>();
+    rgba8_to_cairo_image(img, *surface);
+}
 #endif
 
 void export_image()
@@ -465,6 +479,7 @@ void export_image()
 #if defined(HAVE_CAIRO) && defined(HAVE_PYCAIRO)
         .def("from_cairo",&from_cairo)
         .staticmethod("from_cairo")
+        .def("to_cairo", &to_cairo)
 #endif
         ;
 

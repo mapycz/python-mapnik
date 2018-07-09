@@ -236,6 +236,22 @@ if mapnik.has_pycairo():
         def test_pycairo_pdf_surface3():
             eq_(_pycairo_surface('pdf', 'polygon'), True)
 
+    def test_image_to_cairo_surface():
+        im = mapnik.Image(30, 20)
+        reference_color = mapnik.Color("red")
+        im.fill(reference_color)
+        surface = cairo.ImageSurface(
+            cairo.FORMAT_ARGB32,
+            im.width(),
+            im.height())
+        im.to_cairo(surface)
+        actual = mapnik.Image.from_cairo(surface)
+        eq_(actual.width(), im.width())
+        eq_(actual.height(), im.height())
+        eq_(actual.is_solid(), True)
+        actual_color = actual.get_pixel(0, 0, True)
+        eq_(actual_color, reference_color)
+
 if __name__ == "__main__":
     setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
