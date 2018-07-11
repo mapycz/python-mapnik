@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.28) Seznam; urgency=medium
+
+  * szn-mapnik 3.9.28
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 11 Jul 2018 16:13:52 +0200
+
 szn-python-mapnik (3:3.9.27) Seznam; urgency=medium
 
   * Layer parameter of render_layer() given by object reference
