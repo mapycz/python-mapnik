@@ -485,6 +485,7 @@ void render_layer_to_cairo_surface(mapnik::Map const& map,
 
 void render_layer_to_cairo_context(mapnik::Map const& map,
                                    PycairoContext* py_context,
+                                   std::shared_ptr<collision_detector> detector,
                                    mapnik::layer const& layer,
                                    double scale_factor,
                                    unsigned offset_x,
@@ -496,6 +497,7 @@ void render_layer_to_cairo_context(mapnik::Map const& map,
     mapnik::cairo_renderer<mapnik::cairo_ptr> ren(
         map,
         context,
+        detector,
         scale_factor,
         offset_x,
         offset_y);
@@ -943,6 +945,7 @@ BOOST_PYTHON_MODULE(_mapnik)
     def("render_layer", &render_layer_to_cairo_context,
         (arg("map"),
          arg("context"),
+         arg("detector"),
          arg("layer"),
          arg("scale_factor")=1.0,
          arg("offset_x")=0,

@@ -403,7 +403,8 @@ if mapnik.has_pycairo():
         surface = cairo.ImageSurface(
             cairo.FORMAT_ARGB32, m.width, m.height)
         context = cairo.Context(surface)
-        mapnik.render_layer(m, context, lyr)
+        detector = mapnik.LabelCollisionDetector(m)
+        mapnik.render_layer(m, context, detector, lyr)
 
         im = mapnik.Image.from_cairo(surface)
 
