@@ -296,9 +296,9 @@ void agg_renderer_visitor_3::operator()<mapnik::image_rgba8> (mapnik::image_rgba
 struct agg_renderer_visitor_4
 {
     agg_renderer_visitor_4(mapnik::Map const& m, double scale_factor, unsigned offset_x, unsigned offset_y,
-                 mapnik::layer const& layer, std::set<std::string>& names)
+                 mapnik::layer const& layer, std::set<std::string>& names, std::shared_ptr<collision_detector> detector)
         : m_(m), scale_factor_(scale_factor), offset_x_(offset_x), offset_y_(offset_y),
-          layer_(layer), names_(names) {}
+          layer_(layer), names_(names), detector_(detector) {}
 
     template <typename T>
     void operator() (T & pixmap)
@@ -313,13 +313,24 @@ struct agg_renderer_visitor_4
     unsigned offset_y_;
     mapnik::layer const& layer_;
     std::set<std::string> & names_;
+    std::shared_ptr<collision_detector> detector_;
 };
 
 template <>
 void agg_renderer_visitor_4::operator()<mapnik::image_rgba8> (mapnik::image_rgba8 & pixmap)
 {
-    mapnik::agg_renderer<mapnik::image_rgba8> ren(m_,pixmap,scale_factor_,offset_x_, offset_y_);
-    ren.apply(layer_, names_);
+    if (detector_)
+    {
+        mapnik::agg_renderer<mapnik::image_rgba8> ren(
+            m_, pixmap, detector_, scale_factor_,
+            offset_x_,  offset_y_);
+        ren.apply(layer_, names_);
+    }
+    else
+    {
+        mapnik::agg_renderer<mapnik::image_rgba8> ren(m_,pixmap,scale_factor_,offset_x_, offset_y_);
+        ren.apply(layer_, names_);
+    }
 }
 
 
@@ -368,7 +379,20 @@ void render_layer2(mapnik::Map const& map,
 {
     python_unblock_auto_block b;
     std::set<std::string> names;
-    mapnik::util::apply_visitor(agg_renderer_visitor_4(map, scale_factor, offset_x, offset_y, layer, names), image);
+    mapnik::util::apply_visitor(agg_renderer_visitor_4(map, scale_factor, offset_x, offset_y, layer, names, nullptr), image);
+}
+
+void render_layer3(mapnik::Map const& map,
+                   mapnik::image_any& image,
+                   std::shared_ptr<collision_detector> detector,
+                   mapnik::layer const& layer,
+                   double scale_factor,
+                   unsigned offset_x,
+                   unsigned offset_y)
+{
+    python_unblock_auto_block b;
+    std::set<std::string> names;
+    mapnik::util::apply_visitor(agg_renderer_visitor_4(map, scale_factor, offset_x, offset_y, layer, names, detector), image);
 }
 
 #if defined(HAVE_CAIRO) && defined(HAVE_PYCAIRO)
@@ -924,6 +948,16 @@ BOOST_PYTHON_MODULE(_mapnik)
     def("render_layer", &render_layer2,
         (arg("map"),
          arg("image"),
+         arg("layer"),
+         arg("scale_factor")=1.0,
+         arg("offset_x")=0,
+         arg("offset_y")=0
+        )
+        );
+    def("render_layer_with_detector", &render_layer3,
+        (arg("map"),
+         arg("image"),
+         arg("detector"),
          arg("layer"),
          arg("scale_factor")=1.0,
          arg("offset_x")=0,
