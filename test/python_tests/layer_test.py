@@ -67,6 +67,9 @@ def test_layer_sublayers_modify():
     eq_(len(layer2.layers), 1)
     eq_(layer2.layers[0].name, "2_2")
 
+    del m.layers[:]
+    eq_(len(m.layers), 0)
+
 
 def test_layer_comp_op():
     l = mapnik.Layer('test')
