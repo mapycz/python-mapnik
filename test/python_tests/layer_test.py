@@ -52,6 +52,22 @@ def test_layer_sublayers():
     eq_(sublayer.name, "text")
 
 
+def test_layer_sublayers_modify():
+    m = mapnik.Map(512, 512)
+    m.layers.append(mapnik.Layer("1"))
+    m.layers.append(mapnik.Layer("2"))
+    eq_(len(m.layers), 2)
+
+    layer2 = m.layers[1]
+    eq_(layer2.name, "2")
+    layer2.layers.append(mapnik.Layer("2_1"))
+    layer2.layers.append(mapnik.Layer("2_2"))
+    eq_(len(layer2.layers), 2)
+    del layer2.layers[0]
+    eq_(len(layer2.layers), 1)
+    eq_(layer2.layers[0].name, "2_2")
+
+
 def test_layer_comp_op():
     l = mapnik.Layer('test')
     eq_(l.comp_op, None)
