@@ -1,4 +1,4 @@
-szn-python-mapnik (3:3.9.30) UNRELEASED; urgency=medium
+szn-python-mapnik (3:3.9.30) Seznam; urgency=medium
 
   * Added LabelCollisionDetector parameter to render_layer() with Cairo context
   * New render_layer_with_detector() for AGG renderer
