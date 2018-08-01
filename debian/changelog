@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.31) Seznam; urgency=medium
+
+  * szn-mapnik 3.9.31
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 01 Aug 2018 16:54:10 +0200
+
 szn-python-mapnik (3:3.9.30) Seznam; urgency=medium
 
   * Added LabelCollisionDetector parameter to render_layer() with Cairo context
