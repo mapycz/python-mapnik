@@ -429,7 +429,7 @@ void export_group_symbolizer()
 
 }
 
-void export_label_placement()
+void export_enums()
 {
     using namespace boost::python;
 
@@ -443,6 +443,13 @@ void export_label_placement()
         .value("VERTEX_LAST", mapnik::VERTEX_LAST_PLACEMENT)
         .value("CENTROID", mapnik::CENTROID_PLACEMENT)
         .value("ALTERNATING_GRID", mapnik::ALTERNATING_GRID_PLACEMENT)
+        ;
+
+    enum_<mapnik::simplify_algorithm_e>("simplify_algorithm")
+        .value("radial_distance", mapnik::radial_distance)
+        .value("douglas_peucker", mapnik::douglas_peucker)
+        .value("visvalingam_whyatt", mapnik::visvalingam_whyatt)
+        .value("zhao_saalfeld", mapnik::zhao_saalfeld)
         ;
 }
 

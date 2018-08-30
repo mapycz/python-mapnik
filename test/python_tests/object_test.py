@@ -35,9 +35,14 @@ def test_symbolizer():
     ]
     for cls in clases:
         s = cls()
+
         eq_(s.clip, None)
         s.clip = True
         eq_(s.clip is True, True)
+
+        eq_(s.simplify_algorithm, None)
+        s.simplify_algorithm = mapnik.simplify_algorithm.douglas_peucker
+        eq_(s.simplify_algorithm, mapnik.simplify_algorithm.douglas_peucker)
 
 
 if __name__ == "__main__":
