@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.34) Seznam; urgency=medium
+
+  * Exposed enumeration simplify_algorithm_e
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Thu, 30 Aug 2018 22:37:05 +0200
+
 szn-python-mapnik (3:3.9.33) Seznam; urgency=medium
 
   * szn-mapnik 3.9.33
