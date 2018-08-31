@@ -75,9 +75,37 @@ using mapnik::parse_path;
 
 namespace {
 using namespace boost::python;
-void __setitem__(mapnik::symbolizer_base & sym, std::string const& name, mapnik::symbolizer_base::value_type const& val)
+void __setitem__(
+    mapnik::symbolizer_base & sym,
+    std::string const& name,
+    const object& val)
 {
-    put(sym, mapnik::get_key(name), val);
+    if (PyBool_Check(val.ptr()))
+    {
+        mapnik::value_bool v = extract<mapnik::value_bool>(val);
+        put(sym, mapnik::get_key(name), v);
+    }
+    else if (PyFloat_Check(val.ptr()))
+    {
+        mapnik::value_double v = extract<mapnik::value_double>(val);
+        put(sym, mapnik::get_key(name), v);
+    }
+    else if (
+#if PY_MAJOR_VERSION > 2
+        PyLong_Check(val.ptr())
+#else
+        PyInt_Check(val.ptr())
+#endif
+    )
+    {
+        mapnik::value_integer v = extract<mapnik::value_integer>(val);
+        put(sym, mapnik::get_key(name), v);
+    }
+    else
+    {
+        mapnik::symbolizer_base::value_type v = extract<mapnik::symbolizer_base::value_type>(val);
+        put(sym, mapnik::get_key(name), v);
+    }
 }
 
 std::shared_ptr<mapnik::symbolizer_base::value_type> numeric_wrapper(const object& arg)
@@ -171,9 +199,9 @@ void export_symbolizer()
 {
     using namespace boost::python;
 
-    implicitly_convertible<mapnik::value_bool, mapnik::symbolizer_base::value_type>();
-    implicitly_convertible<mapnik::value_integer, mapnik::symbolizer_base::value_type>();
-    implicitly_convertible<mapnik::value_double, mapnik::symbolizer_base::value_type>();
+    //implicitly_convertible<mapnik::value_bool, mapnik::symbolizer_base::value_type>();
+    //implicitly_convertible<mapnik::value_integer, mapnik::symbolizer_base::value_type>();
+    //implicitly_convertible<mapnik::value_double, mapnik::symbolizer_base::value_type>();
     implicitly_convertible<std::string, mapnik::symbolizer_base::value_type>();
     implicitly_convertible<mapnik::color, mapnik::symbolizer_base::value_type>();
     implicitly_convertible<mapnik::expression_ptr, mapnik::symbolizer_base::value_type>();
