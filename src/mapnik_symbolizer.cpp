@@ -223,6 +223,11 @@ void export_symbolizer()
         .def("__init__", make_constructor(numeric_wrapper))
         ;
 
+    class_<mapnik::enumeration_wrapper>("EnumerationWrapper",
+                                        init<int>())
+        .def("__int__", &mapnik::enumeration_wrapper::operator int)
+        ;
+
     class_<symbolizer_base>("SymbolizerBase",no_init)
         .def("__setitem__",&__setitem__)
         .def("__setattr__",&__setitem__)

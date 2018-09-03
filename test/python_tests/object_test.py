@@ -10,6 +10,7 @@ import mapnik
 from .utilities import execution_path, run_all
 
 
+
 def test_collision_symbolizer():
     s = mapnik.CollisionSymbolizer()
     eq_(s.collision_cache_detect, None)
@@ -37,12 +38,15 @@ def test_symbolizer():
         s = cls()
 
         eq_(s.clip, None)
-        s.clip = True
+        s.clip = mapnik.NumericWrapper(True)
         eq_(s.clip is True, True)
 
         eq_(s.simplify_algorithm, None)
-        s.simplify_algorithm = mapnik.simplify_algorithm.douglas_peucker
-        eq_(s.simplify_algorithm, mapnik.simplify_algorithm.douglas_peucker)
+        s.simplify_algorithm = mapnik.EnumerationWrapper(
+            mapnik.simplify_algorithm.douglas_peucker)
+        eq_(type(s.simplify_algorithm), mapnik.EnumerationWrapper)
+        eq_(mapnik.simplify_algorithm(s.simplify_algorithm),
+            mapnik.simplify_algorithm.douglas_peucker)
 
 
 if __name__ == "__main__":
