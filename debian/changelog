@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.9.36) Seznam; urgency=medium
+
+  * szn-mapnik 3.9.36
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Mon, 17 Sep 2018 13:06:38 +0200
+
 szn-python-mapnik (3:3.9.35) Seznam; urgency=medium
 
   * Exposed EnumerationWrapper for correct work with enumerations
