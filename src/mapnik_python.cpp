@@ -400,11 +400,18 @@ void render3(mapnik::Map const& map,
              PycairoSurface* py_surface,
              double scale_factor = 1.0,
              unsigned offset_x = 0,
-             unsigned offset_y = 0)
+             unsigned offset_y = 0,
+             bool text_outlines = false)
 {
     python_unblock_auto_block b;
     mapnik::cairo_surface_ptr surface(cairo_surface_reference(py_surface->surface), mapnik::cairo_surface_closer());
-    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(map,mapnik::create_context(surface),scale_factor,offset_x,offset_y);
+    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(
+        map,
+        mapnik::create_context(surface),
+        scale_factor,
+        offset_x,
+        offset_y,
+        text_outlines);
     ren.apply();
 }
 
@@ -420,11 +427,18 @@ void render5(mapnik::Map const& map,
              PycairoContext* py_context,
              double scale_factor = 1.0,
              unsigned offset_x = 0,
-             unsigned offset_y = 0)
+             unsigned offset_y = 0,
+             bool text_outlines = false)
 {
     python_unblock_auto_block b;
     mapnik::cairo_ptr context(cairo_reference(py_context->ctx), mapnik::cairo_closer());
-    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(map,context,scale_factor,offset_x, offset_y);
+    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(
+        map,
+        context,
+        scale_factor,
+        offset_x,
+        offset_y,
+        text_outlines);
     ren.apply();
 }
 
@@ -452,11 +466,19 @@ void render_with_detector3(
     std::shared_ptr<collision_detector> detector,
     double scale_factor = 1.0,
     unsigned offset_x = 0u,
-    unsigned offset_y = 0u)
+    unsigned offset_y = 0u,
+    bool text_outlines = false)
 {
     python_unblock_auto_block b;
     mapnik::cairo_ptr context(cairo_reference(py_context->ctx), mapnik::cairo_closer());
-    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(map,context,detector,scale_factor,offset_x,offset_y);
+    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(
+        map,
+        context,
+        detector,
+        scale_factor,
+        offset_x,
+        offset_y,
+        text_outlines);
     ren.apply();
 }
 
@@ -477,11 +499,19 @@ void render_with_detector5(
     std::shared_ptr<collision_detector> detector,
     double scale_factor = 1.0,
     unsigned offset_x = 0u,
-    unsigned offset_y = 0u)
+    unsigned offset_y = 0u,
+    bool text_outlines = false)
 {
     python_unblock_auto_block b;
     mapnik::cairo_surface_ptr surface(cairo_surface_reference(py_surface->surface), mapnik::cairo_surface_closer());
-    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(map, mapnik::create_context(surface), detector, scale_factor, offset_x, offset_y);
+    mapnik::cairo_renderer<mapnik::cairo_ptr> ren(
+        map,
+        mapnik::create_context(surface),
+        detector,
+        scale_factor,
+        offset_x,
+        offset_y,
+        text_outlines);
     ren.apply();
 }
 
@@ -490,7 +520,8 @@ void render_layer_to_cairo_surface(mapnik::Map const& map,
                                    mapnik::layer const& layer,
                                    double scale_factor,
                                    unsigned offset_x,
-                                   unsigned offset_y)
+                                   unsigned offset_y,
+                                   bool text_outlines)
 {
     python_unblock_auto_block b;
     mapnik::cairo_surface_ptr surface(
@@ -501,7 +532,8 @@ void render_layer_to_cairo_surface(mapnik::Map const& map,
         mapnik::create_context(surface),
         scale_factor,
         offset_x,
-        offset_y);
+        offset_y,
+        text_outlines);
     std::set<std::string> names;
     ren.apply(layer, names);
 }
@@ -512,7 +544,8 @@ void render_layer_to_cairo_context(mapnik::Map const& map,
                                    mapnik::layer const& layer,
                                    double scale_factor,
                                    unsigned offset_x,
-                                   unsigned offset_y)
+                                   unsigned offset_y,
+                                   bool text_outlines)
 {
     python_unblock_auto_block b;
     mapnik::cairo_ptr context(
@@ -523,7 +556,8 @@ void render_layer_to_cairo_context(mapnik::Map const& map,
         detector,
         scale_factor,
         offset_x,
-        offset_y);
+        offset_y,
+        text_outlines);
     std::set<std::string> names;
     ren.apply(layer, names);
 }
@@ -971,7 +1005,8 @@ BOOST_PYTHON_MODULE(_mapnik)
          arg("layer"),
          arg("scale_factor")=1.0,
          arg("offset_x")=0,
-         arg("offset_y")=0
+         arg("offset_y")=0,
+         arg("text_outline")=false
         )
         );
 
@@ -982,7 +1017,8 @@ BOOST_PYTHON_MODULE(_mapnik)
          arg("layer"),
          arg("scale_factor")=1.0,
          arg("offset_x")=0,
-         arg("offset_y")=0
+         arg("offset_y")=0,
+         arg("text_outline")=false
         )
         );
 #endif
