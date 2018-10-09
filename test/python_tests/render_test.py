@@ -458,7 +458,7 @@ if mapnik.has_pycairo():
         surface = cairo.PDFSurface(output, m.width, m.height)
         mapnik.render(m, surface, 1, 0, 0)
         surface.finish()
-        eq_(len(output.getbuffer()) > 100, True)
+        eq_(len(output.getvalue()) > 100, True)
 
 
 if __name__ == "__main__":
