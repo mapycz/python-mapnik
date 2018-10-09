@@ -4,6 +4,7 @@
 import os
 import sys
 import tempfile
+import io
 
 from nose.tools import eq_, raises
 
@@ -448,6 +449,16 @@ if mapnik.has_pycairo():
         eq_(c.g, 0)
         eq_(c.b, 0)
         eq_(c.a, 255)
+
+    def test_render_empty_pdf():
+        m = mapnik.Map(256, 256)
+        m.zoom_all()
+
+        output = io.BytesIO()
+        surface = cairo.PDFSurface(output, m.width, m.height)
+        mapnik.render(m, surface, 1, 0, 0)
+        surface.finish()
+        eq_(len(output.getbuffer()) > 100, True)
 
 
 if __name__ == "__main__":

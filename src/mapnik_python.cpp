@@ -398,10 +398,10 @@ void render_layer3(mapnik::Map const& map,
 
 void render3(mapnik::Map const& map,
              PycairoSurface* py_surface,
-             double scale_factor = 1.0,
-             unsigned offset_x = 0,
-             unsigned offset_y = 0,
-             bool text_outlines = false)
+             double scale_factor,
+             unsigned offset_x,
+             unsigned offset_y,
+             bool text_outlines)
 {
     python_unblock_auto_block b;
     mapnik::cairo_surface_ptr surface(cairo_surface_reference(py_surface->surface), mapnik::cairo_surface_closer());
@@ -1038,6 +1038,12 @@ BOOST_PYTHON_MODULE(_mapnik)
 
 #if defined(HAVE_CAIRO) && defined(HAVE_PYCAIRO)
     def("render",&render3,
+        (arg("map"),
+         arg("surface"),
+         arg("scale_factor")=1.0,
+         arg("offset_x")=0,
+         arg("offset_y")=0,
+         arg("text_outlines")=false),
         "\n"
         "Render Map to Cairo Surface using offsets\n"
         "\n"
