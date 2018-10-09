@@ -259,7 +259,7 @@ if mason_build:
 extra_comp_args = check_output([mapnik_config, '--cflags']).split(' ')
 extra_comp_args.append('-I/usr/src/mapbox/mapnik-vector-tile')
 
-if os.environ.get("PYCAIRO", "false") == "true":
+if os.environ.get("PYCAIRO", "true") == "true":
     try:
         extra_comp_args.append('-DHAVE_PYCAIRO')
         print("-I%s/include/pycairo".format(sys.exec_prefix))
