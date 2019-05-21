@@ -369,6 +369,7 @@ setup(
             'src/python_grid_utils.cpp',
             'src/mapnik_vector_tile.cpp',
             'src/mapnik_vector_tile_render.cpp',
+            'src/mapnik_vector_tile_preview.cpp',
             'src/mapnik_vector_tile_info.cpp',
             '/usr/src/mapbox/mapnik-vector-tile/vector_tile.pb.cc',
         ],

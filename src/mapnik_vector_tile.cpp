@@ -166,6 +166,7 @@ boost::python::object mvt_get_buffer(mapnik::vector_tile_impl::tile const& tile)
 }
 
 extern void export_mvt_render();
+extern void export_mvt_preview();
 extern void export_mvt_info();
 
 void export_mvt()
@@ -229,5 +230,6 @@ void export_mvt()
     export_mvt_create();
     export_mvt_info();
     export_mvt_render();
+    export_mvt_preview();
 }
 
