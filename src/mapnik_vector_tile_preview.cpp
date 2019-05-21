@@ -77,6 +77,11 @@ static const preview_map preview_map_;
 void preview_mvt_merc(mapnik::vector_tile_impl::merc_tile const& mvt,
                       mapnik::image_any& image)
 {
+    if (!image.is<mapnik::image_rgba8>())
+    {
+        throw std::runtime_error("This image type is not currently supported for rendering.");
+    }
+
     mapnik::Map map(preview_map_.map);
     map.resize(image.width(), image.height());
 
@@ -88,44 +93,37 @@ void preview_mvt_merc(mapnik::vector_tile_impl::merc_tile const& mvt,
     const double scale_factor = 1;
     mapnik::layer layer = map.get_layer(0);
 
-    if (image.is<mapnik::image_rgba8>())
-    {
-        mapnik::image_rgba8 & image_data = mapnik::util::get<mapnik::image_rgba8>(image);
-        mapnik::agg_renderer<mapnik::image_rgba8> ren(map, m_req, vars, image_data, scale_factor);
-        ren.start_map_processing(map);
+    mapnik::image_rgba8 & image_data = mapnik::util::get<mapnik::image_rgba8>(image);
+    mapnik::agg_renderer<mapnik::image_rgba8> ren(map, m_req, vars, image_data, scale_factor);
+    ren.start_map_processing(map);
 
-        for (std::size_t i = 0; i < mvt.get_layers().size(); i++)
+    for (std::size_t i = 0; i < mvt.get_layers().size(); i++)
+    {
+        protozero::pbf_reader layer_msg;
+        if (mvt.layer_reader(i, layer_msg))
         {
-            protozero::pbf_reader layer_msg;
-            if (mvt.layer_reader(i, layer_msg))
-            {
-                using ds_type = mapnik::vector_tile_impl::tile_datasource_pbf;
-                using ds_holder_type = std::shared_ptr<ds_type>;
-                ds_holder_type ds = std::make_shared<ds_type>(
-                    layer_msg, mvt.x(), mvt.y(), mvt.z());
-                ds->set_envelope(map_extent);
-                layer.set_datasource(ds);
+            using ds_type = mapnik::vector_tile_impl::tile_datasource_pbf;
+            using ds_holder_type = std::shared_ptr<ds_type>;
+            ds_holder_type ds = std::make_shared<ds_type>(
+                layer_msg, mvt.x(), mvt.y(), mvt.z());
+            ds->set_envelope(map_extent);
+            layer.set_datasource(ds);
 
-                std::set<std::string> names;
-                ren.apply_to_layer(layer,
-                                   ren,
-                                   map_proj,
-                                   m_req.scale(),
-                                   scale_denom,
-                                   m_req.width(),
-                                   m_req.height(),
-                                   m_req.extent(),
-                                   m_req.buffer_size(),
-                                   names);
-            }
+            std::set<std::string> names;
+            ren.apply_to_layer(layer,
+                               ren,
+                               map_proj,
+                               m_req.scale(),
+                               scale_denom,
+                               m_req.width(),
+                               m_req.height(),
+                               m_req.extent(),
+                               m_req.buffer_size(),
+                               names);
         }
+    }
 
-        ren.end_map_processing(map);
-    }
-    else
-    {
-        throw std::runtime_error("This image type is not currently supported for rendering.");
-    }
+    ren.end_map_processing(map);
 }
 
 void export_mvt_preview()
