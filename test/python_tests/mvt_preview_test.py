@@ -12,11 +12,6 @@ import mapnik
 from .utilities import execution_path, run_all, compare_file_size
 
 
-def setup():
-    # All of the paths used are relative, if we run the tests
-    # from another directory we need to chdir()
-    os.chdir(execution_path('.'))
-
 def test_preview_mvt():
     mvt = mapnik.VectorTileMerc(28, 12, 5)
 
@@ -32,6 +27,7 @@ def test_preview_mvt():
     actual = 'images/mvt/tile3.preview.actual.png'
     im.save(actual, 'png32')
     eq_(compare_file_size(actual, expected, 100), True)
+
 
 def test_preview_mvt_custom_style():
     style = """
