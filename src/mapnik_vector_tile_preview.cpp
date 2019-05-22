@@ -74,16 +74,14 @@ const std::string preview_map::style_xml(R"preview_style(
 
 static const preview_map preview_map_;
 
-void preview_mvt_merc(mapnik::vector_tile_impl::merc_tile const& mvt,
-                      mapnik::image_any& image)
+void preview_mvt_merc_custom(mapnik::vector_tile_impl::merc_tile const& mvt,
+                             mapnik::Map const& map,
+                             mapnik::image_any& image)
 {
     if (!image.is<mapnik::image_rgba8>())
     {
         throw std::runtime_error("This image type is not currently supported for rendering.");
     }
-
-    mapnik::Map map(preview_map_.map);
-    map.resize(image.width(), image.height());
 
     const mapnik::projection map_proj(map.srs(), true);
     const mapnik::box2d<double> map_extent = mvt.extent();
@@ -91,7 +89,7 @@ void preview_mvt_merc(mapnik::vector_tile_impl::merc_tile const& mvt,
     const mapnik::attributes vars;
     const double scale_denom = 0;
     const double scale_factor = 1;
-    mapnik::layer layer = map.get_layer(0);
+    mapnik::layer layer(map.get_layer(0));
 
     mapnik::image_rgba8 & image_data = mapnik::util::get<mapnik::image_rgba8>(image);
     mapnik::agg_renderer<mapnik::image_rgba8> ren(map, m_req, vars, image_data, scale_factor);
@@ -126,13 +124,25 @@ void preview_mvt_merc(mapnik::vector_tile_impl::merc_tile const& mvt,
     ren.end_map_processing(map);
 }
 
+void preview_mvt_merc(mapnik::vector_tile_impl::merc_tile const& mvt,
+                      mapnik::image_any& image)
+{
+    preview_mvt_merc_custom(mvt, preview_map_.map, image);
+}
+
 void export_mvt_preview()
 {
     using namespace boost::python;
 
+    def("preview_mvt_merc", &preview_mvt_merc_custom,
+        (arg("tile"),
+         arg("map"),
+         arg("image")),
+        "Render all geometries of a MVT with custom style");
+
     def("preview_mvt_merc", &preview_mvt_merc,
         (arg("tile"),
          arg("image")),
-        "Briefly render all geometries of a MVT");
+        "Render all geometries of a MVT");
 }
 
