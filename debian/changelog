@@ -1,3 +1,10 @@
+szn-python-mapnik (3:3.10.13) Seznam; urgency=medium
+
+  * New mvt_preview utility
+  * New mapnik-vector-tile
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 22 May 2019 17:37:42 +0200
+
 szn-python-mapnik (3:3.10.12) Seznam; urgency=medium
 
   * szn-mapnik 3.10.12
