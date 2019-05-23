@@ -18,7 +18,7 @@ def mvt_preview(args):
         preview_mvt_merc(mvt, mapnikMap, image)
     else:
         preview_mvt_merc(mvt, image)
-    image.save(args.out, "png32")
+    image.save(args.out, "png8")
 
 
 def unknown_command(args):
