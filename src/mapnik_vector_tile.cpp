@@ -27,6 +27,7 @@
 #include <mapbox/mapnik-vector-tile/vector_tile_load_tile.hpp>
 #include <mapbox/mapnik-vector-tile/vector_tile_datasource_pbf.hpp>
 #include <mapbox/mapnik-vector-tile/vector_tile_tile.hpp>
+#include <mapbox/mapnik-vector-tile/vector_tile_wafer.hpp>
 #include <mapbox/mapnik-vector-tile/vector_tile_merc_tile.hpp>
 
 #define BOOST_PYTHON_MAX_ARITY 20
@@ -70,6 +71,54 @@ boost::python::object create_mvt_merc(
     std::string const& buffer = tile.get_buffer();
     return boost::python::object(boost::python::handle<>(
         PyBytes_FromStringAndSize(buffer.data(), buffer.size())));
+}
+
+boost::python::list create_mvt_wafer_merc(
+    mapnik::Map const& map,
+    std::uint64_t x,
+    std::uint64_t y,
+    std::uint64_t z,
+    unsigned span,
+    std::uint32_t tile_size,
+    boost::optional<std::int32_t> buffer_size,
+    double scale_denom,
+    int offset_x,
+    int offset_y,
+    bool style_level_filter,
+    double simplify_distance,
+    double area_threshold,
+    bool process_all_rings,
+    bool multi_polygon_union,
+    mapnik::vector_tile_impl::polygon_fill_type fill_type,
+    std::string const& image_format,
+    mapnik::scaling_method_e scaling_method,
+    std::launch threading_mode)
+{
+    mapnik::vector_tile_impl::processor proc(map);
+
+    proc.set_area_threshold(area_threshold);
+    proc.set_simplify_distance(simplify_distance);
+    proc.set_multi_polygon_union(multi_polygon_union);
+    proc.set_process_all_rings(process_all_rings);
+    proc.set_fill_type(fill_type);
+    proc.set_image_format(image_format);
+    proc.set_scaling_method(scaling_method);
+    proc.set_threading_mode(threading_mode);
+
+    mapnik::vector_tile_impl::merc_wafer wafer(proc.create_wafer(
+        x, y, z, span, tile_size, buffer_size, scale_denom,
+        offset_x, offset_y, style_level_filter));
+
+    boost::python::list tiles;
+
+    for (auto const & tile : wafer.tiles())
+    {
+        std::string const& buffer = tile.get_buffer();
+        tiles.append(boost::python::object(boost::python::handle<>(
+            PyBytes_FromStringAndSize(buffer.data(), buffer.size()))));
+    }
+
+    return tiles;
 }
 
 boost::python::object compress_mvt(std::string const& input)
@@ -134,6 +183,42 @@ void export_mvt_create()
          arg("threading_mode") = std::launch::deferred),
         "Creates MVT into a buffer\n"
         "mapnik.create_mvt_merc(m, 2257, 1393, 12, 4096, 0, 0, 0, 0)");
+
+    def("create_mvt_wafer_merc", &create_mvt_wafer_merc,
+        (arg("map"),
+         arg("x"),
+         arg("y"),
+         arg("z"),
+         arg("span"),
+         arg("tile_size") = 4096,
+         // If None, buffer size is taken from the Map.
+         arg("buffer_size") = boost::optional<std::int32_t>(),
+         arg("scale_denom") = 0.0,
+         arg("offset_x") = 0,
+         arg("offset_y") = 0,
+         // Filter features by rule conditions in styles.
+         arg("style_level_filter") = false,
+         // Positive value in the units of vector tile coordinates will turn on
+         // douglas-peucker with given simplification distance.
+         arg("simplify_distance") = 0.0,
+         // Skip polygons with area below this threshold,
+         // in vector tile coordinates units.
+         arg("area_threshold") = 0.1,
+         // Process all rings even exterior ring is degenerated
+         // or smaller than area_threshold.
+         arg("process_all_rings") = false,
+         // Conflate multi-polygon.
+         arg("multi_polygon_union") = false,
+         // Polygon fill strategy used during clipping.
+         arg("fill_type") = fill_type::positive_fill,
+         // Raster image format.
+         arg("image_format") = std::string("tiff"),
+         // Raster scaling method.
+         arg("scaling_method") = mapnik::SCALING_BILINEAR,
+         // Allows parallel processing of layers.
+         arg("threading_mode") = std::launch::deferred),
+        "Creates MVT into a buffer\n"
+        "mapnik.create_mvt_wafer_merc(m, 2257, 1393, 12, 8, 4096, 0, 0, 0, 0)");
 
     def("compress_mvt", &compress_mvt,
         "gzip compression");

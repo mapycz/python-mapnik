@@ -132,7 +132,7 @@ void render_mvt_merc(mapnik::vector_tile_impl::merc_tile const& mvt,
 
     if (x || y || z)
     {
-        map_extent = mapnik::vector_tile_impl::merc_extent(1, *x, *y, *z);
+        map_extent = mapnik::vector_tile_impl::merc_extent(*x, *y, *z);
     }
 
     mapnik::request m_req(image.width(), image.height(), map_extent);
