@@ -1,3 +1,10 @@
+szn-python-mapnik (3:3.11.0) Seznam; urgency=medium
+
+  * mvt_preview: Use less costly png8
+  * New create_mvt_wafer_merc()
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 29 May 2019 18:16:16 +0200
+
 szn-python-mapnik (3:3.10.13) Seznam; urgency=medium
 
   * New mvt_preview utility
