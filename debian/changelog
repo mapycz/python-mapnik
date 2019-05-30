@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.11.1) Seznam; urgency=medium
+
+  * Update szn-mapnik-vector-tile-dev
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Thu, 30 May 2019 08:09:01 +0200
+
 szn-python-mapnik (3:3.11.0) Seznam; urgency=medium
 
   * mvt_preview: Use less costly png8
