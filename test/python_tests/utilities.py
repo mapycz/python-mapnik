@@ -133,12 +133,12 @@ def side_by_side_image(left_im, right_im):
     return im
 
 
-def assert_box2d_almost_equal(a, b, msg=None):
+def assert_box2d_almost_equal(a, b, msg=None, places=7):
     msg = msg or ("%r != %r" % (a, b))
-    assert_almost_equal(a.minx, b.minx, msg=msg)
-    assert_almost_equal(a.maxx, b.maxx, msg=msg)
-    assert_almost_equal(a.miny, b.miny, msg=msg)
-    assert_almost_equal(a.maxy, b.maxy, msg=msg)
+    assert_almost_equal(a.minx, b.minx, msg=msg, places=places)
+    assert_almost_equal(a.maxx, b.maxx, msg=msg, places=places)
+    assert_almost_equal(a.miny, b.miny, msg=msg, places=places)
+    assert_almost_equal(a.maxy, b.maxy, msg=msg, places=places)
 
 
 def compare_file_size(file1, file2, max_diff):

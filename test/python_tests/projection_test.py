@@ -152,16 +152,17 @@ def test_proj_antimeridian_bbox():
     assert_box2d_almost_equal(rev_ext, better)
 
     # checks for not being snapped (ie. not antimeridian)
-    normal = mapnik.Box2d(148.766759749, -60.1222810238,
-                          159.95484893, -24.9771195151)
+    normal = mapnik.Box2d(148.7667597489, -60.1222810241,
+                          159.9548489296, -24.9771195155)
+
     buffered_query_ext = mapnik.Box2d(274000, 3087000, 276000, 7173000)
     fwd_ext = prj_trans_fwd.forward(buffered_query_ext, PROJ_ENVELOPE_POINTS)
-    assert_box2d_almost_equal(fwd_ext, normal)
+    assert_box2d_almost_equal(fwd_ext, normal, places=6)
 
     # check the same logic works for .backward()
     ext = mapnik.Box2d(274000, 3087000, 276000, 7173000)
     rev_ext = prj_trans_rev.backward(ext, PROJ_ENVELOPE_POINTS)
-    assert_box2d_almost_equal(rev_ext, normal)
+    assert_box2d_almost_equal(rev_ext, normal, places=6)
 
 
 def test_scale_denominator():
