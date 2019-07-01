@@ -84,7 +84,7 @@ def test_good_files():
     good_files.extend(glob.glob("../visual_tests/styles/*.xml"))
 
     failures = []
-    for ds_init in [mapnik.threading_mode.deferred, mapnik.threading_mode.async]:
+    for ds_init in [mapnik.threading_mode.deferred, mapnik.threading_mode.asynchronous]:
         for filename in good_files:
             try:
                 m = mapnik.Map(512, 512)

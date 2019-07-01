@@ -877,7 +877,7 @@ BOOST_PYTHON_MODULE(_mapnik)
     export_enums();
 
     enum_<std::launch>("threading_mode")
-        .value("async", std::launch::async)
+        .value("asynchronous", std::launch::async)
         .value("deferred", std::launch::deferred)
     ;
 
