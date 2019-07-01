@@ -1,6 +1,6 @@
 Source: szn-python-mapnik
-Maintainer: Debian GIS Project <pkg-grass-devel@lists.alioth.debian.org>
-Uploaders: Bas Couwenberg <sebastic@debian.org>
+Maintainer: Jiri Drbalek <jiri.drbalek@firma.seznam.cz>
+Uploaders: Jiri Drbalek <jiri.drbalek@firma.seznam.cz>
 Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9),
@@ -21,9 +21,9 @@ Build-Depends: debhelper (>= 9),
                python3-nose,
                fonts-dejavu
 Standards-Version: 3.9.8
-Vcs-Browser: https://anonscm.debian.org/cgit/pkg-grass/python-mapnik.git
-Vcs-Git: https://anonscm.debian.org/git/pkg-grass/python-mapnik.git
-Homepage: https://github.com/mapnik/python-mapnik
+Vcs-Browser: https://github.com/mapycz/python-mapnik
+Vcs-Git: https://github.com/mapycz/python-mapnik.git
+Homepage: https://github.com/mapycz/python-mapnik
 X-Python-Version: >= 2.7
 
 Package: szn-python-mapnik
