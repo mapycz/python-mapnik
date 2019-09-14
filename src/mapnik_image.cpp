@@ -39,6 +39,24 @@
 #include <mapnik/image_compositing.hpp>
 #include <mapnik/image_view_any.hpp>
 
+#include <mapnik/marker.hpp>
+#include <mapnik/marker_cache.hpp>
+#include <mapnik/svg/svg_parser.hpp>
+#include <mapnik/svg/svg_storage.hpp>
+#include <mapnik/svg/svg_converter.hpp>
+#include <mapnik/svg/svg_path_adapter.hpp>
+#include <mapnik/svg/svg_path_attributes.hpp>
+#include <mapnik/svg/svg_path_adapter.hpp>
+#include <mapnik/svg/svg_renderer_agg.hpp>
+#include <mapnik/svg/svg_path_attributes.hpp>
+
+#include "agg_rasterizer_scanline_aa.h"
+#include "agg_basics.h"
+#include "agg_rendering_buffer.h"
+#include "agg_renderer_base.h"
+#include "agg_pixfmt_rgba.h"
+#include "agg_scanline_u.h"
+
 // cairo
 #if defined(HAVE_CAIRO) && defined(HAVE_PYCAIRO)
 #include <mapnik/cairo/cairo_context.hpp>
@@ -346,6 +364,77 @@ void to_cairo(image_any const& src, PycairoSurface* py_surface)
 }
 #endif
 
+std::shared_ptr<image_any> from_svg(std::string const & svg_buffer, std::uint32_t max_size, double scale, bool strict)
+{
+    using namespace mapnik::svg;
+    mapnik::svg_path_ptr marker_path(std::make_shared<mapnik::svg_storage_type>());
+    vertex_stl_adapter<svg_path_storage> stl_storage(marker_path->source());
+    svg_path_adapter svg_path(stl_storage);
+    svg_converter_type svg(svg_path, marker_path->attributes());
+    svg_parser p(svg);
+    p.parse_from_string(svg_buffer);
+    if (strict && !p.err_handler().error_messages().empty())
+    {
+        std::ostringstream error_msg;
+        for (auto const& error : p.err_handler().error_messages()) {
+            error_msg << error << std::endl;
+        }
+        throw std::runtime_error(error_msg.str());
+    }
+
+    double lox, loy, hix, hiy;
+    svg.bounding_rect(&lox, &loy, &hix, &hiy);
+    marker_path->set_bounding_box(lox,loy,hix,hiy);
+    marker_path->set_dimensions(svg.width(),svg.height());
+
+    using pixfmt = agg::pixfmt_rgba32_pre;
+    using renderer_base = agg::renderer_base<pixfmt>;
+    using renderer_solid = agg::renderer_scanline_aa_solid<renderer_base>;
+    agg::rasterizer_scanline_aa<> ras_ptr;
+    agg::scanline_u8 sl;
+
+    double opacity = 1;
+    double svg_width = svg.width() * scale;
+    double svg_height = svg.height() * scale;
+
+    if (svg_width <= 0 || svg_height <= 0)
+    {
+        throw std::runtime_error("image created from svg must have a width and height greater then zero");
+    }
+
+    if (svg_width > static_cast<double>(max_size) || svg_height > static_cast<double>(max_size))
+    {
+        std::stringstream s;
+        s << "image created from svg must be " << max_size << " pixels or fewer on each side";
+        throw std::runtime_error(s.str());
+    }
+
+    mapnik::image_rgba8 im(static_cast<int>(svg_width), static_cast<int>(svg_height), true, true);
+    agg::rendering_buffer buf(im.bytes(), im.width(), im.height(), im.row_size());
+    pixfmt pixf(buf);
+    renderer_base renb(pixf);
+
+    mapnik::box2d<double> const& bbox = marker_path->bounding_box();
+    mapnik::coord<double,2> c = bbox.center();
+    // center the svg marker on '0,0'
+    agg::trans_affine mtx = agg::trans_affine_translation(-c.x,-c.y);
+    // Scale the image
+    mtx.scale(scale);
+    // render the marker at the center of the marker box
+    mtx.translate(0.5 * im.width(), 0.5 * im.height());
+
+    mapnik::svg::svg_renderer_agg<mapnik::svg::svg_path_adapter,
+        mapnik::svg_attribute_type,
+        renderer_solid,
+        agg::pixfmt_rgba32_pre > svg_renderer_this(svg_path,
+                                                   marker_path->attributes());
+
+    svg_renderer_this.render(ras_ptr, sl, renb, mtx, opacity, bbox);
+    mapnik::demultiply_alpha(im);
+
+    return std::make_shared<mapnik::image_any>(im);
+}
+
 void export_image()
 {
     using namespace boost::python;
@@ -481,6 +570,8 @@ void export_image()
         .staticmethod("from_cairo")
         .def("to_cairo", &to_cairo)
 #endif
+        .def("from_svg",&from_svg)
+        .staticmethod("from_svg")
         ;
 
 }

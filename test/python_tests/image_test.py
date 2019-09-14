@@ -386,6 +386,17 @@ def test_image_open_from_string():
     eq_(len(mapnik.Image.fromstring(im1.tostring('tiff')).tostring()), length)
     eq_(len(mapnik.Image.frombuffer(buffer(im1.tostring('tiff'))).tostring()), length)
 
+
+def test_image_from_svg():
+    filepath = 'data/tile0.expected-svg.svg'
+    with open(filepath) as f:
+        im = mapnik.Image.from_svg(f.read(), 2048, 1.0, False)
+    eq_(im.width(), 256)
+    eq_(im.height(), 256)
+    im_buff = im.tostring("png32")
+    eq_(len(im_buff), 17571)
+
+
 if __name__ == "__main__":
     setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))
