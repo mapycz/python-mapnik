@@ -25,7 +25,6 @@ def test_symbolizer():
         mapnik.DebugSymbolizer,
         mapnik.CollisionSymbolizer,
         mapnik.BuildingSymbolizer,
-        mapnik.GroupSymbolizer,
         mapnik.TextSymbolizer,
         mapnik.ShieldSymbolizer,
         mapnik.RasterSymbolizer,

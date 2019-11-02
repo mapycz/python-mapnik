@@ -83,7 +83,6 @@ void export_raster_symbolizer();
 void export_text_symbolizer();
 void export_shield_symbolizer();
 void export_debug_symbolizer();
-void export_group_symbolizer();
 void export_collision_symbolizer();
 void export_font_engine();
 void export_projection();
@@ -863,7 +862,6 @@ BOOST_PYTHON_MODULE(_mapnik)
     export_text_symbolizer();
     export_shield_symbolizer();
     export_debug_symbolizer();
-    export_group_symbolizer();
     export_collision_symbolizer();
     export_font_engine();
     export_projection();
