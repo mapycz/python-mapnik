@@ -1,3 +1,9 @@
+szn-python-mapnik (3:3.12.2) Seznam; urgency=medium
+
+  * szn-mapnik 3.12.2
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Mon, 04 Nov 2019 14:27:28 +0100
+
 szn-python-mapnik (3:3.12.1) Seznam; urgency=medium
 
   * Remove relicts of group symbolizer
