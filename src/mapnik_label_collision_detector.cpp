@@ -69,7 +69,7 @@ make_label_boxes(std::shared_ptr<collision_detector> cache)
         auto & det = cache->detector(key);
         for (auto jtr = det.begin(); jtr != det.end(); ++jtr)
         {
-            boxes.append<box2d<double>>(jtr->get().box);
+            boxes.append<box2d<double>>(jtr->first);
         }
     }
 
