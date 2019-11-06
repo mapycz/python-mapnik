@@ -123,7 +123,7 @@ void export_mvt();
 #endif
 
 using collision_detector = mapnik::keyed_collision_cache<
-    mapnik::label_collision_detector4>;
+    mapnik::label_collision_detector_boost>;
 
 namespace mapnik {
     class font_set;
