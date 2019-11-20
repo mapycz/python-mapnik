@@ -32,13 +32,8 @@
 
 // mapnik
 #include <mapnik/image_util.hpp>
+#include <mapnik/image_view_any.hpp>
 #include <mapnik/util/parallelize.hpp>
-
-struct encoding_chunk
-{
-    const boost::python::object & key;
-    mapnik::image_any const & img;
-};
 
 unsigned jobs_by_chunks(unsigned chunks, unsigned max_concurrency=0)
 {
@@ -47,11 +42,29 @@ unsigned jobs_by_chunks(unsigned chunks, unsigned max_concurrency=0)
     return std::max(1u, std::min(chunks, max_jobs));
 }
 
-struct encoding_func
+struct encoding_chunk
 {
+    const boost::python::object & key;
+    mapnik::image_view_any const & img;
+    std::string encoded_img;
 };
 
-void encode_parallel(boost::python::dict & tiles)
+struct encoding_func
+{
+    std::vector<encoding_chunk> & chunks;
+    std::string const & format;
+
+    void operator()(unsigned begin, unsigned end)
+    {
+        for (unsigned i = begin; i < end; ++i)
+        {
+            encoding_chunk & chunk = chunks[i];
+            chunk.encoded_img = std::move(mapnik::save_to_string(chunk.img, format));
+        }
+    }
+};
+
+void encode_parallel(boost::python::dict & tiles, std::string const & format)
 {
     using namespace boost::python;
 
@@ -62,8 +75,7 @@ void encode_parallel(boost::python::dict & tiles)
 
     for (; it != end; ++it)
     {
-        extract<mapnik::image_any const &> img((*it)[1]);
-        //mapnik::image_any const & img = extract<mapnik::image_any const &>((*it)[1]);
+        extract<mapnik::image_view_any const &> img((*it)[1]);
         if (img.check())
         {
             chunks.emplace_back(encoding_chunk{ (*it)[0], img() });
@@ -72,13 +84,8 @@ void encode_parallel(boost::python::dict & tiles)
 
     unsigned jobs = jobs_by_chunks(chunks.size());
 
-    util::parallelize(comp_func, jobs, src.height());
-    /*
-    for (auto & tile_kv : tiles.iteritems())
-    {
-        chunks.emplace_back({ tile_kv->
-    }
-    */
+    encoding_func enc_func{chunks, format};
+    mapnik::util::parallelize(enc_func, jobs, chunks.size());
 }
 
 void export_encode_parallel()
