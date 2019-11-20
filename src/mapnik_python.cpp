@@ -93,6 +93,7 @@ void export_label_collision_detector();
 void export_logger();
 void export_enums();
 void export_mvt();
+void export_encode_parallel();
 
 #include <mapnik/version.hpp>
 #include <mapnik/map.hpp>
@@ -1249,4 +1250,5 @@ BOOST_PYTHON_MODULE(_mapnik)
     to_python_converter<mapnik::value,mapnik_value_to_python>();
 
     export_mvt();
+    export_encode_parallel();
 }
