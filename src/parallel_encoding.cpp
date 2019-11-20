@@ -44,7 +44,7 @@ unsigned jobs_by_chunks(unsigned chunks, unsigned max_concurrency=0)
 
 struct encoding_chunk
 {
-    const boost::python::object & key;
+    boost::python::object key;
     mapnik::image_view_any const & img;
     std::string encoded_img;
 };

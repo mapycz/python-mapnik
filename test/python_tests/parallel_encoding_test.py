@@ -26,10 +26,12 @@ def test_encode():
     tiles = {
         1: im.view(0, 0, 256, 256),
         2: im.view(0, 0, 256, 256),
-        3: "do not encode",
+        3: ["do not encode"],
     }
     mapnik.encode_parallel(tiles, "png8")
-    #eq_(im.get_type(), mapnik.ImageType.rgba8)
+    eq_(type(tiles[1]), bytes)
+    eq_(type(tiles[2]), bytes)
+    eq_(type(tiles[3]), list)
 
 
 
