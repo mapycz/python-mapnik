@@ -70,7 +70,7 @@ void encode_parallel(boost::python::dict & tiles, std::string const & format)
 
     std::vector<encoding_chunk> chunks;
 
-    auto tiles_iterator = tiles.iteritems();
+    auto tiles_iterator = tiles.items();
     stl_input_iterator<tuple> it(tiles_iterator), end;
 
     for (; it != end; ++it)
