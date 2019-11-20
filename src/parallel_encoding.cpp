@@ -86,6 +86,16 @@ void encode_parallel(boost::python::dict & tiles, std::string const & format)
 
     encoding_func enc_func{chunks, format};
     mapnik::util::parallelize(enc_func, jobs, chunks.size());
+
+    for (auto const & chunk : chunks)
+    {
+        // TODO: move the data instead of copy, if possible
+        tiles[chunk.key] = boost::python::object(
+            boost::python::handle<>(
+                PyBytes_FromStringAndSize(
+                    chunk.encoded_img.data(),
+                    chunk.encoded_img.size())));
+    }
 }
 
 void export_encode_parallel()
