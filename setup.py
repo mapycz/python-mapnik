@@ -372,6 +372,7 @@ setup(
             'src/mapnik_vector_tile_preview.cpp',
             'src/mapnik_vector_tile_info.cpp',
             '/usr/src/mapbox/mapnik-vector-tile/vector_tile.pb.cc',
+            'src/parallel_encoding.cpp',
         ],
             language='c++',
             extra_compile_args=extra_comp_args,
