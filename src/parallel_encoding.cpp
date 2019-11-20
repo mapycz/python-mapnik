@@ -101,4 +101,10 @@ void encode_parallel(boost::python::dict & tiles, std::string const & format)
 void export_encode_parallel()
 {
     using namespace boost::python;
+
+    def("encode_parallel", &encode_parallel,
+        (arg("tiles"),
+         arg("format")
+         )
+        );
 }
