@@ -1,5 +1,3 @@
-# encoding: utf8
-
 import os
 from binascii import unhexlify
 

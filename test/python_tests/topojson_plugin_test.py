@@ -1,7 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function
-
 import os
 
 from nose.tools import assert_almost_equal, eq_

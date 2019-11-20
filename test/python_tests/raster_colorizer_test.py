@@ -1,4 +1,3 @@
-# coding=utf8
 import os
 import sys
 
@@ -7,8 +6,6 @@ from nose.tools import eq_
 import mapnik
 
 from .utilities import execution_path, run_all
-
-PYTHON3 = sys.version_info[0] == 3
 
 
 def setup():
@@ -97,8 +94,6 @@ def test_stop_label():
         1, mapnik.COLORIZER_LINEAR, mapnik.Color('red'))
     assert not stop.label
     label = u"32º C"
-    if not PYTHON3:
-        label = label.encode('utf8')
     stop.label = label
     assert stop.label == label, stop.label
 

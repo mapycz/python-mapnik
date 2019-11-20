@@ -46,38 +46,20 @@ PyObject* view_tostring1(image_view_any const& view)
 {
     std::ostringstream ss(std::ios::out|std::ios::binary);
     mapnik::view_to_stream(view, ss);
-    return
-#if PY_VERSION_HEX >= 0x03000000
-        ::PyBytes_FromStringAndSize
-#else
-        ::PyString_FromStringAndSize
-#endif
-        ((const char*)ss.str().c_str(),ss.str().size());
+    return ::PyBytes_FromStringAndSize((const char*)ss.str().c_str(),ss.str().size());
 }
 
 // encode (png,jpeg)
 PyObject* view_tostring2(image_view_any const & view, std::string const& format)
 {
     std::string s = save_to_string(view, format);
-    return
-#if PY_VERSION_HEX >= 0x03000000
-        ::PyBytes_FromStringAndSize
-#else
-        ::PyString_FromStringAndSize
-#endif
-        (s.data(),s.size());
+    return ::PyBytes_FromStringAndSize(s.data(),s.size());
 }
 
 PyObject* view_tostring3(image_view_any const & view, std::string const& format, mapnik::rgba_palette const& pal)
 {
     std::string s = save_to_string(view, format, pal);
-    return
-#if PY_VERSION_HEX >= 0x03000000
-        ::PyBytes_FromStringAndSize
-#else
-        ::PyString_FromStringAndSize
-#endif
-        (s.data(),s.size());
+    return ::PyBytes_FromStringAndSize(s.data(),s.size());
 }
 
 bool is_solid(image_view_any const& view)

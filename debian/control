@@ -9,11 +9,6 @@ Build-Depends: debhelper (>= 9),
                szn-libmapnik-dev (= 3:3.13.0),
                szn-mapnik-vector-tile-dev (>= 1.6.1),
                libprotobuf-dev,
-               python-all-dev,
-               python-setuptools,
-               python-cairo,
-               python-cairo-dev,
-               python-nose,
                python3-all-dev,
                python3-setuptools,
                python3-cairo,
@@ -24,27 +19,6 @@ Standards-Version: 3.9.8
 Vcs-Browser: https://github.com/mapycz/python-mapnik
 Vcs-Git: https://github.com/mapycz/python-mapnik.git
 Homepage: https://github.com/mapycz/python-mapnik
-X-Python-Version: >= 2.7
-
-Package: szn-python-mapnik
-Architecture: any
-Depends: python-cairo | szn-python-cairo,
-         szn-libmapnik (= 3:3.13.0),
-         ${python:Depends},
-         ${shlibs:Depends},
-         ${misc:Depends}
-Provides: ${python:Provides}
-Description: Python 2 interface to the mapnik library
- Mapnik is an OpenSource C++ toolkit for developing GIS
- (Geographic Information Systems) applications. At the core is a C++
- shared library providing algorithms/patterns for spatial data access and
- visualization.
- .
- Essentially a collection of geographic objects (map, layer, datasource,
- feature, geometry), the library doesn't rely on "windowing systems" and
- is intended to work in multi-threaded environments
- .
- This package contains the bindings for Python 2.
 
 Package: szn-python3-mapnik
 Architecture: any

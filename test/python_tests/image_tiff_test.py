@@ -8,7 +8,7 @@ from nose.tools import assert_not_equal, eq_
 
 import mapnik
 
-from .utilities import READ_FLAGS, execution_path, run_all
+from .utilities import execution_path, run_all
 
 
 def hashstr(var):
@@ -28,7 +28,7 @@ def test_tiff_round_trip_scanline():
     org_str = hashstr(im.tostring())
     im.save(filepath, 'tiff:method=scanline')
     im2 = mapnik.Image.open(filepath)
-    with open(filepath, READ_FLAGS) as f:
+    with open(filepath, "rb") as f:
         im3 = mapnik.Image.fromstring(f.read())
     eq_(im.width(), im2.width())
     eq_(im.height(), im2.height())
@@ -60,7 +60,7 @@ def test_tiff_round_trip_stripped():
     im.save(filepath, 'tiff:method=stripped')
     im2 = mapnik.Image.open(filepath)
     im2.save('/tmp/mapnik-tiff-io-stripped2.tiff', 'tiff:method=stripped')
-    with open(filepath, READ_FLAGS) as f:
+    with open(filepath, "rb") as f:
         im3 = mapnik.Image.fromstring(f.read())
     eq_(im.width(), im2.width())
     eq_(im.height(), im2.height())
@@ -105,7 +105,7 @@ def test_tiff_round_trip_rows_stripped():
     eq_(c2.a, 128)
     eq_(c2.get_premultiplied(), True)
     im2.save(filepath2, 'tiff:method=stripped:rows_per_strip=8')
-    with open(filepath, READ_FLAGS) as f:
+    with open(filepath, "rb") as f:
         im3 = mapnik.Image.fromstring(f.read())
     eq_(im.width(), im2.width())
     eq_(im.height(), im2.height())
@@ -149,7 +149,7 @@ def test_tiff_round_trip_buffered_tiled():
     eq_(c2.b, 64)
     eq_(c2.a, 128)
     eq_(c2.get_premultiplied(), True)
-    with open(filepath, READ_FLAGS) as f:
+    with open(filepath, "rb") as f:
         im3 = mapnik.Image.fromstring(f.read())
     im2.save(filepath2, 'tiff:method=tiled:tile_width=32:tile_height=32')
     im3.save(filepath3, 'tiff:method=tiled:tile_width=32:tile_height=32')
@@ -182,7 +182,7 @@ def test_tiff_round_trip_tiled():
     im.fill(mapnik.Color('rgba(1,255,128,.5)'))
     im.save(filepath, 'tiff:method=tiled')
     im2 = mapnik.Image.open(filepath)
-    with open(filepath, READ_FLAGS) as f:
+    with open(filepath, "rb") as f:
         im3 = mapnik.Image.fromstring(f.read())
     eq_(im.width(), im2.width())
     eq_(im.height(), im2.height())

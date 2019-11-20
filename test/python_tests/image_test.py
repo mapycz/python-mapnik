@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import os
 import sys
 
@@ -8,12 +5,7 @@ from nose.tools import assert_almost_equal, eq_, raises
 
 import mapnik
 
-from .utilities import READ_FLAGS, execution_path, get_unique_colors, run_all
-
-PYTHON3 = sys.version_info[0] == 3
-if PYTHON3:
-    buffer = memoryview
-
+from .utilities import execution_path, get_unique_colors, run_all
 
 def setup():
     # All of the paths used are relative, if we run the tests
@@ -337,7 +329,7 @@ def test_jpeg_round_trip():
     im.fill(mapnik.Color('rgba(1,2,3,.5)'))
     im.save(filepath, 'jpeg')
     im2 = mapnik.Image.open(filepath)
-    with open(filepath, READ_FLAGS) as f:
+    with open(filepath, "rb") as f:
         im3 = mapnik.Image.fromstring(f.read())
     eq_(im.width(), im2.width())
     eq_(im.height(), im2.height())
@@ -355,7 +347,7 @@ def test_png_round_trip():
     im.fill(mapnik.Color('rgba(1,2,3,.5)'))
     im.save(filepath, 'png')
     im2 = mapnik.Image.open(filepath)
-    with open(filepath, READ_FLAGS) as f:
+    with open(filepath, "rb") as f:
         im3 = mapnik.Image.fromstring(f.read())
     eq_(im.width(), im2.width())
     eq_(im.height(), im2.height())
@@ -372,19 +364,19 @@ def test_png_round_trip():
 def test_image_open_from_string():
     filepath = '../data/images/dummy.png'
     im1 = mapnik.Image.open(filepath)
-    with open(filepath, READ_FLAGS) as f:
+    with open(filepath, "rb") as f:
         im2 = mapnik.Image.fromstring(f.read())
     eq_(im1.width(), im2.width())
     length = len(im1.tostring())
     eq_(length, len(im2.tostring()))
     eq_(len(mapnik.Image.fromstring(im1.tostring('png')).tostring()), length)
     eq_(len(mapnik.Image.fromstring(im1.tostring('jpeg')).tostring()), length)
-    eq_(len(mapnik.Image.frombuffer(buffer(im1.tostring('png'))).tostring()), length)
-    eq_(len(mapnik.Image.frombuffer(buffer(im1.tostring('jpeg'))).tostring()), length)
+    eq_(len(mapnik.Image.frombuffer(memoryview(im1.tostring('png'))).tostring()), length)
+    eq_(len(mapnik.Image.frombuffer(memoryview(im1.tostring('jpeg'))).tostring()), length)
 
     # TODO - https://github.com/mapnik/mapnik/issues/1831
     eq_(len(mapnik.Image.fromstring(im1.tostring('tiff')).tostring()), length)
-    eq_(len(mapnik.Image.frombuffer(buffer(im1.tostring('tiff'))).tostring()), length)
+    eq_(len(mapnik.Image.frombuffer(memoryview(im1.tostring('tiff'))).tostring()), length)
 
 
 def test_image_from_svg():

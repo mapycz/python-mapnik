@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import os
 import sys
 
@@ -9,9 +6,6 @@ from nose.tools import eq_
 import mapnik
 
 from .utilities import execution_path, run_all
-
-PYTHON3 = sys.version_info[0] == 3
-
 
 def setup():
     # All of the paths used are relative, if we run the tests
@@ -32,10 +26,7 @@ def test_reading_palettes():
     with open('../data/palettes/palette256.act', 'rb') as act:
         palette = mapnik.Palette(act.read(), 'act')
     eq_(palette.to_string(), expected_256)
-    if PYTHON3:
-        palette = mapnik.Palette(b'\xff\x00\xff\xff\xff\xff', 'rgb')
-    else:
-        palette = mapnik.Palette('\xff\x00\xff\xff\xff\xff', 'rgb')
+    palette = mapnik.Palette(b'\xff\x00\xff\xff\xff\xff', 'rgb')
     eq_(palette.to_string(), expected_rgb)
 
 if 'shape' in mapnik.DatasourceCache.plugin_names():

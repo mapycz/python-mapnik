@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import os
 
 from nose.tools import assert_raises

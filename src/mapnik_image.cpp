@@ -61,11 +61,7 @@
 #if defined(HAVE_CAIRO) && defined(HAVE_PYCAIRO)
 #include <mapnik/cairo/cairo_context.hpp>
 #include <mapnik/cairo/cairo_image_util.hpp>
-#if PY_MAJOR_VERSION >= 3
 #include <py3cairo.h>
-#else
-#include <pycairo.h>
-#endif
 #include <cairo.h>
 #endif
 
@@ -80,38 +76,20 @@ using namespace boost::python;
 // output 'raw' pixels
 PyObject* tostring1( image_any const& im)
 {
-    return
-#if PY_VERSION_HEX >= 0x03000000
-        ::PyBytes_FromStringAndSize
-#else
-        ::PyString_FromStringAndSize
-#endif
-        ((const char*)im.bytes(),im.size());
+    return ::PyBytes_FromStringAndSize((const char*)im.bytes(),im.size());
 }
 
 // encode (png,jpeg)
 PyObject* tostring2(image_any const & im, std::string const& format)
 {
     std::string s = mapnik::save_to_string(im, format);
-    return
-#if PY_VERSION_HEX >= 0x03000000
-        ::PyBytes_FromStringAndSize
-#else
-        ::PyString_FromStringAndSize
-#endif
-        (s.data(),s.size());
+    return ::PyBytes_FromStringAndSize (s.data(),s.size());
 }
 
 PyObject* tostring3(image_any const & im, std::string const& format, mapnik::rgba_palette const& pal)
 {
     std::string s = mapnik::save_to_string(im, format, pal);
-    return
-#if PY_VERSION_HEX >= 0x03000000
-        ::PyBytes_FromStringAndSize
-#else
-        ::PyString_FromStringAndSize
-#endif
-        (s.data(),s.size());
+    return ::PyBytes_FromStringAndSize(s.data(),s.size());
 }
 
 

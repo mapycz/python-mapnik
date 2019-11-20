@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import atexit
 import os
 import sys
@@ -10,11 +9,6 @@ from nose.tools import eq_, raises
 import mapnik
 
 from .utilities import execution_path, run_all
-
-PYTHON3 = sys.version_info[0] == 3
-if PYTHON3:
-    long = int
-
 
 MAPNIK_TEST_DBNAME = 'mapnik-tmp-postgis-test-db'
 POSTGIS_TEMPLATE_DBNAME = 'template_postgis'
@@ -934,7 +928,7 @@ if os.environ.get("MAPNIK_POSTGIS_TESTS", "true") == "true" \
         ds = mapnik.Datasource(**opts)
         fs = ds.featureset()
         feat = fs.next()
-        eq_(feat.id(), long(1))
+        eq_(feat.id(), int(1))
         eq_(feat['osm_id'], None)
 
         meta = ds.describe()

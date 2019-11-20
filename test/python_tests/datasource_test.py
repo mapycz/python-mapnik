@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os
 import sys
 from itertools import groupby
@@ -8,11 +7,6 @@ from nose.tools import eq_, raises
 import mapnik
 
 from .utilities import execution_path, run_all
-
-PYTHON3 = sys.version_info[0] == 3
-if PYTHON3:
-    xrange = range
-
 
 def setup():
     # All of the paths used are relative, if we run the tests
@@ -47,7 +41,7 @@ def test_vrt_referring_to_missing_files():
 
         # Fancy stuff to supress output of error
         # open 2 fds
-        null_fds = [os.open(os.devnull, os.O_RDWR) for x in xrange(2)]
+        null_fds = [os.open(os.devnull, os.O_RDWR) for x in range(2)]
         # save the current file descriptors to a tuple
         save = os.dup(1), os.dup(2)
         # put /dev/null fds on 1 and 2
@@ -170,8 +164,8 @@ def test_hit_grid():
         m.zoom_all()
         join_field = 'NAME'
         fg = []  # feature grid
-        for y in xrange(0, 256, 4):
-            for x in xrange(0, 256, 4):
+        for y in range(0, 256, 4):
+            for x in range(0, 256, 4):
                 featureset = m.query_map_point(0, x, y)
                 added = False
                 for feature in featureset:

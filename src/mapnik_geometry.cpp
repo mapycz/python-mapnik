@@ -101,13 +101,7 @@ PyObject* to_wkb_impl(mapnik::geometry::geometry<double> const& geom, mapnik::wk
     mapnik::util::wkb_buffer_ptr wkb = mapnik::util::to_wkb(geom,byte_order);
     if (wkb)
     {
-        return
-#if PY_VERSION_HEX >= 0x03000000
-            ::PyBytes_FromStringAndSize
-#else
-            ::PyString_FromStringAndSize
-#endif
-            ((const char*)wkb->buffer(),wkb->size());
+        return ::PyBytes_FromStringAndSize((const char*)wkb->buffer(),wkb->size());
     }
     else
     {

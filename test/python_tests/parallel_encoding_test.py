@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from nose.tools import eq_
 import mapnik
 

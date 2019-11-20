@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import os
 import sys
 import tempfile
@@ -11,8 +8,6 @@ from nose.tools import eq_, raises
 import mapnik
 
 from .utilities import execution_path, run_all
-
-PYTHON3 = sys.version_info[0] == 3
 
 
 def setup():
@@ -30,10 +25,7 @@ def test_simplest_render():
     eq_(im.painted(), False)
     eq_(im.is_solid(), True)
     s = im.tostring()
-    if PYTHON3:
-        eq_(s, 256 * 256 * b'\x00\x00\x00\x00')
-    else:
-        eq_(s, 256 * 256 * '\x00\x00\x00\x00')
+    eq_(s, 256 * 256 * b'\x00\x00\x00\x00')
 
 
 def test_render_image_to_string():
@@ -42,10 +34,7 @@ def test_render_image_to_string():
     eq_(im.painted(), False)
     eq_(im.is_solid(), True)
     s = im.tostring()
-    if PYTHON3:
-        eq_(s, 256 * 256 * b'\x00\x00\x00\xff')
-    else:
-        eq_(s, 256 * 256 * '\x00\x00\x00\xff')
+    eq_(s, 256 * 256 * b'\x00\x00\x00\xff')
 
 
 def test_non_solid_image():

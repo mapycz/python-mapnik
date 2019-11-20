@@ -21,7 +21,7 @@ export LIB_DIR_NAME=/mapnik/3.0
 
 %:
 	dh $@ \
-		--with python2,python3 \
+		--with python3 \
 		--buildsystem=pybuild \
 		--parallel
 

@@ -1,4 +1,4 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
 
 import os
 import os.path
@@ -12,16 +12,12 @@ from ctypes.util import find_library
 
 from setuptools import Command, Extension, setup
 
-PYTHON3 = sys.version_info.major == 3
-
 NEEDED_BOOST_LIBS = ['python', 'thread', 'system']
 
 # Utils
 def check_output(args, shell=False):
     output = subprocess.check_output(args, shell=shell)
-    if PYTHON3:
-        # check_output returns bytes in PYTHON3.
-        output = output.decode()
+    output = output.decode()
     return output.rstrip('\n')
 
 def boost_suffixes():

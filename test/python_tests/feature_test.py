@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from binascii import unhexlify
 
 from nose.tools import eq_, raises

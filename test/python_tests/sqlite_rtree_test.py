@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 import os
 import sqlite3
 import sys
@@ -9,8 +8,6 @@ from nose.tools import eq_
 import mapnik
 
 from .utilities import execution_path, run_all
-
-PYTHON3 = sys.version_info[0] == 3
 
 
 def setup():
@@ -173,8 +170,6 @@ if 'sqlite' in mapnik.DatasourceCache.plugin_names():
         name = result[2]
         eq_(name, 'test point')
         geom_wkb_blob = result[1]
-        if not PYTHON3:
-            geom_wkb_blob = str(geom_wkb_blob)
         eq_(geom_wkb_blob, geom.to_wkb(mapnik.wkbByteOrder.NDR))
         new_geom = mapnik.Geometry.from_wkb(geom_wkb_blob)
         eq_(new_geom.to_wkt(), geom.to_wkt())

@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 import os
 import sys
 import traceback
@@ -9,11 +6,6 @@ from nose.plugins.errorclass import ErrorClass, ErrorClassPlugin
 from nose.tools import assert_almost_equal
 
 import mapnik
-
-PYTHON3 = sys.version_info[0] == 3
-READ_FLAGS = 'rb' if PYTHON3 else 'r'
-if PYTHON3:
-    xrange = range
 
 HERE = os.path.dirname(__file__)
 
@@ -51,7 +43,7 @@ def contains_word(word, bytestring_):
     """
     n = len(word)
     assert len(bytestring_) % n == 0, "len(bytestring_) not multiple of len(word)"
-    chunks = [bytestring_[i:i + n] for i in xrange(0, len(bytestring_), n)]
+    chunks = [bytestring_[i:i + n] for i in range(0, len(bytestring_), n)]
     return word in chunks
 
 
