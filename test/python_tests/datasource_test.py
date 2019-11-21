@@ -151,37 +151,6 @@ def test_ogr_layer_by_sql():
         eq_(num_feats, 1)
 
 
-def test_hit_grid():
-
-    def rle_encode(l):
-        """ encode a list of strings with run-length compression """
-        return ["%d:%s" % (len(list(group)), name)
-                for name, group in groupby(l)]
-
-    m = mapnik.Map(256, 256)
-    try:
-        mapnik.load_map(m, '../data/good_maps/agg_poly_gamma_map.xml')
-        m.zoom_all()
-        join_field = 'NAME'
-        fg = []  # feature grid
-        for y in range(0, 256, 4):
-            for x in range(0, 256, 4):
-                featureset = m.query_map_point(0, x, y)
-                added = False
-                for feature in featureset:
-                    fg.append(feature[join_field])
-                    added = True
-                if not added:
-                    fg.append('')
-        hit_list = '|'.join(rle_encode(fg))
-        eq_(hit_list[:16], '730:|2:Greenland')
-        eq_(hit_list[-12:], '1:Chile|812:')
-    except RuntimeError as e:
-        # only test datasources that we have installed
-        if not 'Could not create datasource' in str(e):
-            raise RuntimeError(str(e))
-
-
 if __name__ == '__main__':
     setup()
     exit(run_all(eval(x) for x in dir() if x.startswith("test_")))

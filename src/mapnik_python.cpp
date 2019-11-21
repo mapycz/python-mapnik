@@ -57,10 +57,6 @@ void export_image();
 void export_image_view();
 void export_gamma_method();
 void export_scaling_method();
-#if defined(GRID_RENDERER)
-void export_grid();
-void export_grid_view();
-#endif
 void export_map();
 void export_python();
 void export_expression();
@@ -108,9 +104,6 @@ void export_encode_parallel();
 #include <mapnik/save_map.hpp>
 #include <mapnik/scale_denominator.hpp>
 #include <mapnik/collision_cache.hpp>
-#if defined(GRID_RENDERER)
-#include "python_grid_utils.hpp"
-#endif
 #include "mapnik_value_converter.hpp"
 #include "mapnik_threads.hpp"
 #include "python_optional.hpp"
@@ -714,15 +707,6 @@ bool has_svg_renderer()
 #endif
 }
 
-bool has_grid_renderer()
-{
-#if defined(GRID_RENDERER)
-    return true;
-#else
-    return false;
-#endif
-}
-
 bool has_jpeg()
 {
 #if defined(HAVE_JPEG)
@@ -829,10 +813,6 @@ BOOST_PYTHON_MODULE(_mapnik)
     export_image_view();
     export_gamma_method();
     export_scaling_method();
-#if defined(GRID_RENDERER)
-    export_grid();
-    export_grid_view();
-#endif
     export_expression();
     export_rule();
     export_style();
@@ -1005,19 +985,6 @@ BOOST_PYTHON_MODULE(_mapnik)
          arg("offset_x")=0,
          arg("offset_y")=0,
          arg("text_outline")=false
-        )
-        );
-#endif
-
-#if defined(GRID_RENDERER)
-    def("render_layer", &mapnik::render_layer_for_grid,
-        (arg("map"),
-         arg("grid"),
-         arg("layer"),
-         arg("fields")=boost::python::list(),
-         arg("scale_factor")=1.0,
-         arg("offset_x")=0,
-         arg("offset_y")=0
         )
         );
 #endif
@@ -1207,7 +1174,6 @@ BOOST_PYTHON_MODULE(_mapnik)
     def("has_tiff", &has_tiff, "Get tiff read/write support status");
     def("has_webp", &has_webp, "Get webp read/write support status");
     def("has_svg_renderer", &has_svg_renderer, "Get svg_renderer status");
-    def("has_grid_renderer", &has_grid_renderer, "Get grid_renderer status");
     def("has_cairo", &has_cairo, "Get cairo library status");
     def("has_pycairo", &has_pycairo, "Get pycairo module status");
 

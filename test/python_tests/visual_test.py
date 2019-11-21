@@ -26,13 +26,11 @@ defaults = {
     'scales': [1.0, 2.0],
     'agg': True,
     'cairo': mapnik.has_cairo(),
-    'grid': mapnik.has_grid_renderer(),
     'ignored_renderers': []
 }
 
 cairo_threshold = 10
 agg_threshold = 0
-grid_threshold = 5
 if 'Linux' == platform.uname()[0]:
     # we assume if linux then you are running packaged cairo
     # which is older than the 1.12.14 version we used on OS X
@@ -40,7 +38,6 @@ if 'Linux' == platform.uname()[0]:
     # https://github.com/mapnik/mapnik/issues/1868
     cairo_threshold = 230
     agg_threshold = 12
-    grid_threshold = 6
 
 
 def render_cairo(m, output, scale_factor):
@@ -48,14 +45,6 @@ def render_cairo(m, output, scale_factor):
     # open and re-save as png8 to save space
     new_im = mapnik.Image.open(output)
     new_im.save(output, 'png32')
-
-
-def render_grid(m, output, scale_factor):
-    grid = mapnik.Grid(m.width, m.height)
-    mapnik.render_layer(m, grid, layer=0, scale_factor=scale_factor)
-    utf1 = grid.encode('utf', resolution=4)
-    with open(output, 'wb') as f:
-        f.write(json.dumps(utf1, indent=1).encode())
 
 
 def render_agg(m, output, scale_factor):
@@ -75,13 +64,6 @@ renderers = [
      'threshold': cairo_threshold,
      'filetype': 'png',
      'dir': 'images'
-     },
-    {'name': 'grid',
-     'render': render_grid,
-     'compare': lambda actual, reference: compare_grids(actual, reference, alpha=False),
-     'threshold': grid_threshold,
-     'filetype': 'json',
-     'dir': 'grids'
      }
 ]
 
@@ -99,41 +81,6 @@ def compare(actual, expected, alpha=True):
     im1 = mapnik.Image.open(actual)
     im2 = mapnik.Image.open(expected)
     return im1.compare(im2, COMPUTE_THRESHOLD, alpha)
-
-
-def compare_grids(actual, expected, threshold=0, alpha=True):
-    global errors
-    global passed
-    with open(actual) as f:
-        im1 = json.loads(f.read())
-    with open(expected) as f:
-        im2 = json.loads(f.read())
-    # TODO - real diffing
-    if not im1['data'] == im2['data']:
-        return 99999999
-    if not im1['keys'] == im2['keys']:
-        return 99999999
-    grid1 = im1['grid']
-    grid2 = im2['grid']
-    # dimensions must be exact
-    width1 = len(grid1[0])
-    width2 = len(grid2[0])
-    if not width1 == width2:
-        return 99999999
-    height1 = len(grid1)
-    height2 = len(grid2)
-    if not height1 == height2:
-        return 99999999
-    diff = 0
-    for y in range(0, height1 - 1):
-        row1 = grid1[y]
-        row2 = grid2[y]
-        width = min(len(row1), len(row2))
-        for w in range(0, width):
-            if row1[w] != row2[w]:
-                diff += 1
-    return diff
-
 
 
 class Reporting:
@@ -258,8 +205,7 @@ class Reporting:
                     (error[3],
                      error[1],
                         error[2]))
-                if '.png' in error[1]:  # ignore grids
-                    sortable_errors.append((error[3], error))
+                sortable_errors.append((error[3], error))
             elif error[0] == self.REPLACE:
                 print(str(idx +
                           1) +
