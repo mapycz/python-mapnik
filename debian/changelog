@@ -1,3 +1,10 @@
+szn-python-mapnik (3:3.13.0) Seznam; urgency=medium
+
+  * Use label_collision_detector_boost
+  * Parallel encoding
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Thu, 21 Nov 2019 10:48:34 +0100
+
 szn-python-mapnik (3:3.12.2) Seznam; urgency=medium
 
   * szn-mapnik 3.12.2
