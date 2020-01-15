@@ -1,3 +1,10 @@
+szn-python-mapnik (3:3.14.0) Seznam; urgency=medium
+
+  * Remove grid renderer
+  * Remove support for Python 2
+
+ -- Jiri Drbalek <jiri.drbalek@firma.seznam.cz>  Wed, 15 Jan 2020 16:40:27 +0100
+
 szn-python-mapnik (3:3.13.0) Seznam; urgency=medium
 
   * Use label_collision_detector_boost
