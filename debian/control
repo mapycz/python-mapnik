@@ -1,6 +1,6 @@
 Source: szn-python-mapnik
-Maintainer: Jiri Drbalek <jiri.drbalek@firma.seznam.cz>
-Uploaders: Jiri Drbalek <jiri.drbalek@firma.seznam.cz>
+Maintainer: mapy.alfa <mapy.alfa@firma.seznam.cz>
+Homepage: https://gitlab.seznam.net/mapycz/libmrender
 Section: python
 Priority: optional
 Build-Depends: debhelper (>= 9),
@@ -16,9 +16,6 @@ Build-Depends: debhelper (>= 9),
                python3-nose,
                fonts-dejavu
 Standards-Version: 3.9.8
-Vcs-Browser: https://github.com/mapycz/python-mapnik
-Vcs-Git: https://github.com/mapycz/python-mapnik.git
-Homepage: https://github.com/mapycz/python-mapnik
 
 Package: szn-python3-mapnik
 Architecture: any
