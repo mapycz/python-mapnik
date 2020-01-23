@@ -6,7 +6,7 @@ Priority: optional
 Build-Depends: debhelper (>= 9),
                dh-python,
                libboost-python-dev,
-               szn-libmapnik-dev (= 3:3.14.1),
+               szn-libmapnik-dev (= 3:3.14.2),
                szn-mapnik-vector-tile-dev (>= 1.6.1),
                libprotobuf-dev,
                python3-all-dev,
@@ -20,7 +20,7 @@ Standards-Version: 3.9.8
 Package: szn-python3-mapnik
 Architecture: any
 Depends: python3-cairo | szn-python3-cairo,
-         szn-libmapnik (= 3:3.14.1),
+         szn-libmapnik (= 3:3.14.2),
          ${python3:Depends},
          ${shlibs:Depends},
          ${misc:Depends}
