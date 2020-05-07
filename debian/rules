@@ -34,3 +34,6 @@ override_dh_auto_clean:
 override_dh_install:
 	dh_install --list-missing
 
+override_dh_auto_test:
+	echo "Tests disabled"
+
