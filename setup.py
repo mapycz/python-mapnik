@@ -146,6 +146,7 @@ linkflags.extend(check_output([mapnik_config, '--libs']).split(' '))
 linkflags.extend(check_output([mapnik_config, '--ldflags']).split(' '))
 linkflags.extend([ '-lmapnik-wkt', '-lmapnik-json'])
 linkflags.append('-lprotobuf-lite')
+linkflags.append('-lpq')
 
 # Dynamically make the mapnik/paths.py file if it doesn't exist.
 if os.path.isfile('mapnik/paths.py'):
@@ -360,6 +361,7 @@ setup(
             'src/mapnik_symbolizer.cpp',
             'src/mapnik_text_placement.cpp',
             'src/mapnik_view_transform.cpp',
+            'src/mapnik_connection_manager.cpp',
             'src/mapnik_vector_tile.cpp',
             'src/mapnik_vector_tile_render.cpp',
             'src/mapnik_vector_tile_preview.cpp',
