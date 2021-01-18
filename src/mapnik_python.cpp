@@ -90,6 +90,7 @@ void export_logger();
 void export_enums();
 void export_mvt();
 void export_encode_parallel();
+void export_connection_manager();
 
 #include <mapnik/version.hpp>
 #include <mapnik/map.hpp>
@@ -832,6 +833,7 @@ BOOST_PYTHON_MODULE(_mapnik)
     export_debug_symbolizer();
     export_collision_symbolizer();
     export_font_engine();
+    export_connection_manager();
     export_projection();
     export_proj_transform();
     export_view_transform();
