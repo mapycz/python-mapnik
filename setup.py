@@ -146,7 +146,9 @@ linkflags.extend(check_output([mapnik_config, '--libs']).split(' '))
 linkflags.extend(check_output([mapnik_config, '--ldflags']).split(' '))
 linkflags.extend([ '-lmapnik-wkt', '-lmapnik-json'])
 linkflags.append('-lprotobuf-lite')
+# For ConnectionManager
 linkflags.append('-lpq')
+linkflags.append('-rdynamic')
 
 # Dynamically make the mapnik/paths.py file if it doesn't exist.
 if os.path.isfile('mapnik/paths.py'):
